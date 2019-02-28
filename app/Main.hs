@@ -1,6 +1,6 @@
 module Main where
 
-import Chapter1
+import Chapter2
 
 main :: IO ()
 main = do 

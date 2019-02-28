@@ -1,9 +1,8 @@
 module Main where
 
-import Lib
+import Chapter2
 
 main :: IO ()
 main = do 
-  print "Hello, world!"
-  print "Hello, again!"
-  someFunc
+  s <- getLine
+  sayHello s

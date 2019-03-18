@@ -1,6 +1,7 @@
 module Chapter6
     ( TisAnInteger(..) 
     , EitherOr(..)
+    , DayOfWeek(..)
     ) where
 
 
@@ -10,6 +11,9 @@ instance Eq TisAnInteger where
   (TisAn x) == (TisAn y) = x == y
 
 data EitherOr a b = Hello a | GoodBye b
+
+data DayOfWeek = Mon | Tue | Wed | Thu | Fri | Sat | Sun deriving(Show,Eq, Ord, Enum)
+
 
 instance (Eq a,Eq b) => Eq (EitherOr a b) where
   Hello a == Hello b = a == b

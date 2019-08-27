@@ -4,7 +4,8 @@ module Chapter8
       inc,
       three',
       applyTimes',
-      f
+      f,
+      fib
     ) where
 
 fact :: Int -> Int
@@ -35,6 +36,17 @@ applyTimes' n f b
   | n <= 0 = b
   | otherwise = f . applyTimes (n-1) f $ b
 
-f :: Bool -> Int
-f True = error "Blah"
-f False = 0
+f :: Bool -> Maybe Int
+f False = Just 0
+f _ = Nothing
+
+fib :: Int -> Int
+fib 0 = 0
+fib 1 = 1
+fib n = fib (n-1) + fib (n-2)
+
+dividedBy :: Integral a => a -> a -> (a,a)
+dividedBy num denom = go num denom 0
+  where go n d count
+          |  n < d = (count,n)
+          | otherwise = go (n - d ) d (count+1)

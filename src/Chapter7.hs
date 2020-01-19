@@ -8,9 +8,7 @@ tensDigit :: Integral a =>  a -> a
 tensDigit = snd . flip divMod 10 
 
 foldBool1 :: a -> a -> Bool -> a
-foldBool1 x y b = case b of
-  True -> x
-  False -> y
+foldBool1 x y b = if b then x else y
 
 foldBool2 :: a -> a -> Bool -> a
 foldBool2 x y b

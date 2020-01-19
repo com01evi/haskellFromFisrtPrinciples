@@ -21,6 +21,9 @@ allAwesome = [awesome, also]
 isPalindrome :: (Eq a) => [a] -> Bool
 isPalindrome = (==) <$> id <*> reverse
 
+isMaybeSame:: (Eq a) => a -> Maybe Bool
+isMaybeSame a = (==) <$> (Just a) <*> (Just a)
+
 myabs :: Integer -> Integer
 myabs a
   | a < 0 = negate a

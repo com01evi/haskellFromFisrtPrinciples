@@ -3,7 +3,7 @@ module Chapter9
     maybeTail,
     maybeHead,
     myenumFromTo,
-    mywords,
+    myWords,
     mydropWhile,
     mytakeWhile,
     firstSen,
@@ -11,7 +11,10 @@ module Chapter9
     sentences,
     acro,
     myTuple,
-    atoz
+    atoz,
+    mySplitAt,
+    myTake,
+    myDrop
     ) where
 
 maybeTail :: [a] -> Maybe [a]
@@ -28,9 +31,21 @@ myenumFromTo i n
   | i == n = [n]
   | otherwise = i : myenumFromTo (succ i) n
 
-mywords :: String -> [String]
-mywords [] = []
-mywords str = mytakeWhile (' '==) str : mywords (mydropWhile (' '==) str)
+myTake :: Int -> [a] -> [a]
+myTake _ [] = []
+myTake 0 _ = []
+myTake n (x:xs) = x: myTake (n-1) xs
+
+myDrop :: Int -> [a] -> [a]
+myDrop _ [] = []
+myDrop 0 xs = xs
+myDrop n (x:xs) = myDrop (n-1) xs
+
+mySplitAt :: Int -> [a] -> ([a], [a])
+mySplitAt n = (,) <$> (myTake n) <*> (myDrop n)
+
+myWords :: String -> [String]
+myWords = splitSentenseWith ' '
 
 mydropWhile :: (a -> Bool) -> [a] -> [a]
 mydropWhile  _ [] = [] 
@@ -55,20 +70,23 @@ fourthSen = "Could frame thy fearful symmetry?"
 sentences = firstSen ++ secondSen ++ thirdSen ++ fourthSen
 
 myLines :: String -> [String]
-myLines [] = []
-myLines str = mytakeWhile ('\n'==) str : myLines (mydropWhile ('\n'==) str )
+myLines = splitSentenseWith '\n'
+
+splitSentenseWith :: Char -> String -> [String]
+splitSentenseWith _ [] = []
+splitSentenseWith c str = mytakeWhile (c==) str : myLines (mydropWhile (c==) str)
 
 acro :: String -> String
 acro xs = [x |x <- xs, elem x ['A'..'Z']]
 
 mySqr :: [Int]
-mySqr = [x^2 | x <- [1..5], x^2 < 50]
+mySqr = [x^2 | x <- [1..5]]
 
 myCube :: [Int]
-myCube = [x^3 | x <- [1..5], x^3 < 50]
+myCube = [x^3 | x <- [1..5]]
 
 myTuple :: [(Int, Int)]
-myTuple = [(x^2,y^3) | x <- [1..5], y <- [1..5], x^2 < 50, x^3 < 50]
+myTuple = [(x,y) | x <- mySqr, y <- myCube, x < 50, y < 50]
 
 atoz :: String
 atoz = ['a'..'z']

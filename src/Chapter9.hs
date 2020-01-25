@@ -14,8 +14,12 @@ module Chapter9
     atoz,
     mySplitAt,
     myTake,
-    myDrop
+    myDrop,
+    itIsMystery,
+    boolMap
     ) where
+
+import Data.Bool (bool)
 
 maybeTail :: [a] -> Maybe [a]
 maybeTail [] = Nothing
@@ -90,3 +94,8 @@ myTuple = [(x,y) | x <- mySqr, y <- myCube, x < 50, y < 50]
 
 atoz :: String
 atoz = ['a'..'z']
+
+itIsMystery xs = map (\x -> elem x "aeiou") xs
+
+boolMap :: [Int] -> [Int]
+boolMap xs = map (\x -> bool x (-x) (x==3)) xs

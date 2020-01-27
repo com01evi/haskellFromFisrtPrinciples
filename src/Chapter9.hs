@@ -16,10 +16,20 @@ module Chapter9
     myTake,
     myDrop,
     itIsMystery,
-    boolMap
+    boolMap,
+    myEven,
+    myOdd,
+    howManyMul3,
+    deleteArticle,
+    myZip,
+    myZip2,
+    toUpperTheFirstChar,
+    caesarCipher,
+    unCaesar
     ) where
 
 import Data.Bool (bool)
+import Data.Char
 
 maybeTail :: [a] -> Maybe [a]
 maybeTail [] = Nothing
@@ -99,3 +109,65 @@ itIsMystery xs = map (\x -> elem x "aeiou") xs
 
 boolMap :: [Int] -> [Int]
 boolMap xs = map (\x -> bool x (-x) (x==3)) xs
+
+myEven :: Int -> Bool
+myEven = (\x -> x `mod` 2 == 0)
+
+myOdd :: Int -> Bool
+myOdd = (\x -> x `mod` 2 /= 0)
+
+howManyMul3 :: [Int] -> Int
+howManyMul3 = length . (filter (\x -> x `mod` 3 == 0))
+
+deleteArticle :: String -> String
+deleteArticle =  concatWithSpace . (filter (\s -> s /= "the" && s /= "a" && s /= "an")) . words
+
+concatWithSpace :: [String] -> String
+concatWithSpace [] = []
+concatWithSpace (x:[]) = x
+concatWithSpace (x:xs) = x ++ " " ++ concatWithSpace xs
+
+myZip :: [a] -> [b] -> [(a,b)]
+myZip _ [] = []
+myZip [] _ = []
+myZip (x:xs) (y:ys) = (x,y): zip xs ys
+
+myZipWith :: (a -> b -> c) -> [a] -> [b] -> [c]
+myZipWith _ _ [] = []
+myZipWith _ [] _ = []
+myZipWith f (x:xs) (y:ys) = (f x y): myZipWith f xs ys
+
+myZip2 :: [a] -> [b] -> [(a,b)]
+myZip2 = myZipWith (,)
+
+--Chapter Exercise 2.
+onlyUpper :: String -> String
+onlyUpper = filter isUpper
+
+--Chapter Exercise 3.
+toUpperTheFirstChar :: String -> String
+toUpperTheFirstChar [] = []
+toUpperTheFirstChar (x:xs) = toUpper x : xs
+
+--Chapter Exercise 4.
+capitalizeAll :: String -> String
+capitalizeAll = fmap toUpper
+
+--Chapter Exercise 5 & 6.
+capitalizedHead :: String -> Char
+capitalizedHead = head . toUpperTheFirstChar
+
+--Caesar cipher
+caesarCipher :: Int -> String -> String
+caesarCipher n = fmap (chr . shift n . ord)
+  where shift :: Int -> Int -> Int
+        shift n x
+          | x + (n `mod` 26) > 122 = 96 + (x + (n `mod` 26) - 122)
+          | otherwise = x + (n `mod` 26)
+
+unCaesar :: Int -> String -> String
+unCaesar n = fmap (chr . shift n . ord)
+  where shift :: Int -> Int -> Int
+        shift n x
+          | x - (n `mod` 26) < 97 = 123 + (x - (n `mod` 26) - 97)
+          | otherwise = x - (n `mod` 26)

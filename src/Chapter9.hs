@@ -23,7 +23,9 @@ module Chapter9
     deleteArticle,
     myZip,
     myZip2,
-    toUpperTheFirstChar
+    toUpperTheFirstChar,
+    caesarCipher,
+    unCaesar
     ) where
 
 import Data.Bool (bool)
@@ -154,3 +156,18 @@ capitalizeAll = fmap toUpper
 --Chapter Exercise 5 & 6.
 capitalizedHead :: String -> Char
 capitalizedHead = head . toUpperTheFirstChar
+
+--Caesar cipher
+caesarCipher :: Int -> String -> String
+caesarCipher n = fmap (chr . shift n . ord)
+  where shift :: Int -> Int -> Int
+        shift n x
+          | x + (n `mod` 26) > 122 = 96 + (x + (n `mod` 26) - 122)
+          | otherwise = x + (n `mod` 26)
+
+unCaesar :: Int -> String -> String
+unCaesar n = fmap (chr . shift n . ord)
+  where shift :: Int -> Int -> Int
+        shift n x
+          | x - (n `mod` 26) < 97 = 123 + (x - (n `mod` 26) - 97)
+          | otherwise = x - (n `mod` 26)

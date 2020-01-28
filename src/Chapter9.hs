@@ -96,7 +96,7 @@ myLines = splitSentenseWith '\n'
 
 splitSentenseWith :: Char -> String -> [String]
 splitSentenseWith _ [] = []
-splitSentenseWith c str = mytakeWhile (c==) str : myLines (mydropWhile (c==) str)
+splitSentenseWith c str = mytakeWhile (c==) str : splitSentenseWith c (mydropWhile (c==) str)
 
 acro :: String -> String
 acro xs = [x |x <- xs, elem x ['A'..'Z']]
@@ -213,6 +213,9 @@ squish (x:xs) = x ++ squish xs
 
 squishMap :: (a -> [b]) -> [a] -> [b]
 squishMap = (=<<)
+
+squishAgain :: [[a]] -> [a]
+squishAgain = (=<<) id
 
 myMaximumBy :: (a -> a -> Ordering) -> [a] -> a
 myMaximumBy f = foldl1 (\acc x -> if f acc x == LT then x else acc)

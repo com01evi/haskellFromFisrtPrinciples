@@ -25,11 +25,19 @@ module Chapter9
     myZip2,
     toUpperTheFirstChar,
     caesarCipher,
-    unCaesar
+    unCaesar,
+    myAny,
+    myOr,
+    myElem1,
+    myElem2,
+    myReverse1,
+    myReverse2,
+    myMaximumBy
     ) where
 
 import Data.Bool (bool)
 import Data.Char
+import Control.Monad
 
 maybeTail :: [a] -> Maybe [a]
 maybeTail [] = Nothing
@@ -171,3 +179,40 @@ unCaesar n = fmap (chr . shift n . ord)
         shift n x
           | x - (n `mod` 26) < 97 = 123 + (x - (n `mod` 26) - 97)
           | otherwise = x - (n `mod` 26)
+
+--Writing my own standard library
+myOr :: [Bool] -> Bool
+myOr [] = False
+myOr (x:xs) = x || myOr xs
+
+myAny :: (a -> Bool) -> [a] -> Bool
+myAny _ [] = False
+myAny f (x:xs)
+  | f x = True
+  | otherwise = myAny f xs
+
+myElem1 :: (Eq a) => a -> [a] -> Bool
+myElem1 _ [] = False
+myElem1 a (x:xs)
+  | a == x = True
+  | otherwise = myElem1 a xs
+
+myElem2 :: (Eq a) => a -> [a] -> Bool
+myElem2 a = any (\x -> x == a)
+
+myReverse1 :: [a] -> [a]
+myReverse1 [] = []
+myReverse1 (x:xs) = myReverse1 xs ++ [x]
+
+myReverse2 :: [a] -> [a]
+myReverse2 = foldl (flip (:)) []
+
+squish :: [[a]] -> [a]
+squish [] = []
+squish (x:xs) = x ++ squish xs
+
+squishMap :: (a -> [b]) -> [a] -> [b]
+squishMap = (=<<)
+
+myMaximumBy :: (a -> a -> Ordering) -> [a] -> a
+myMaximumBy f = foldl1 (\acc x -> if f acc x == LT then x else acc)

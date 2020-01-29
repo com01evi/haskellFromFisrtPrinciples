@@ -32,7 +32,8 @@ module Chapter9
     myElem2,
     myReverse1,
     myReverse2,
-    myMaximumBy
+    myMaximumBy,
+    myMinimumBy
     ) where
 
 import Data.Bool (bool)
@@ -219,3 +220,12 @@ squishAgain = (=<<) id
 
 myMaximumBy :: (a -> a -> Ordering) -> [a] -> a
 myMaximumBy f = foldl1 (\acc x -> if f acc x == LT then x else acc)
+
+myMinimumBy :: (a -> a -> Ordering) -> [a] -> a
+myMinimumBy f = foldl1 (\acc x -> if f acc x == GT then x else acc)
+
+myMaximum :: (Ord a) => [a] -> a
+myMaximum = myMaximumBy compare
+
+myMinimum :: (Ord a) => [a] -> a
+myMinimum = myMinimumBy compare

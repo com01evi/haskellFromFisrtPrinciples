@@ -32,7 +32,8 @@ module Chapter9
     myElem2,
     myReverse1,
     myReverse2,
-    myMaximumBy
+    myMaximumBy,
+    myMinimumBy
     ) where
 
 import Data.Bool (bool)
@@ -96,7 +97,7 @@ myLines = splitSentenseWith '\n'
 
 splitSentenseWith :: Char -> String -> [String]
 splitSentenseWith _ [] = []
-splitSentenseWith c str = mytakeWhile (c==) str : myLines (mydropWhile (c==) str)
+splitSentenseWith c str = mytakeWhile (c==) str : splitSentenseWith c (mydropWhile (c==) str)
 
 acro :: String -> String
 acro xs = [x |x <- xs, elem x ['A'..'Z']]
@@ -214,5 +215,17 @@ squish (x:xs) = x ++ squish xs
 squishMap :: (a -> [b]) -> [a] -> [b]
 squishMap = (=<<)
 
+squishAgain :: [[a]] -> [a]
+squishAgain = (=<<) id
+
 myMaximumBy :: (a -> a -> Ordering) -> [a] -> a
 myMaximumBy f = foldl1 (\acc x -> if f acc x == LT then x else acc)
+
+myMinimumBy :: (a -> a -> Ordering) -> [a] -> a
+myMinimumBy f = foldl1 (\acc x -> if f acc x == GT then x else acc)
+
+myMaximum :: (Ord a) => [a] -> a
+myMaximum = myMaximumBy compare
+
+myMinimum :: (Ord a) => [a] -> a
+myMinimum = myMinimumBy compare

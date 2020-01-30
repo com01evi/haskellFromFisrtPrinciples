@@ -73,14 +73,14 @@ myWords = splitSentenseWith ' '
 mydropWhile :: (a -> Bool) -> [a] -> [a]
 mydropWhile  _ [] = [] 
 mydropWhile p (x:xs)
-  | p x = xs
-  | otherwise = mydropWhile p xs
+  | p x = mydropWhile p xs
+  | otherwise = (x:xs)
 
 mytakeWhile :: (a -> Bool) -> [a] -> [a]
 mytakeWhile _ [] = []
 mytakeWhile p (x:xs) 
-  | p x = []
-  | otherwise = x: mytakeWhile p xs
+  | p x = x: mytakeWhile p xs
+  | otherwise = []
 
 firstSen = "Tyger Tyger, burning bright\n"
 
@@ -97,7 +97,7 @@ myLines = splitSentenseWith '\n'
 
 splitSentenseWith :: Char -> String -> [String]
 splitSentenseWith _ [] = []
-splitSentenseWith c str = mytakeWhile (c==) str : splitSentenseWith c (mydropWhile (c==) str)
+splitSentenseWith c str = takeWhile (c/=) str : splitSentenseWith c (drop 1 (dropWhile (c/=) str))
 
 acro :: String -> String
 acro xs = [x |x <- xs, elem x ['A'..'Z']]

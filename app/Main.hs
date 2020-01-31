@@ -7,6 +7,8 @@ import Chapter5
 import Chapter6
 import Chapter7
 import Chapter8
+import Chapter9
+import Chapter10
 
 main :: IO ()
 main = do

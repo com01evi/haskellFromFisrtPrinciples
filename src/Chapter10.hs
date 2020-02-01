@@ -1,6 +1,8 @@
 module Chapter10
     (
-    myfoldr
+    myfoldr,
+    myfoldl,
+    myReverse
     ) where
 
 myfoldr :: (a -> b -> b) -> b -> [a] -> b
@@ -10,3 +12,6 @@ myfoldr f a (x:xs) = f x (myfoldr f a xs)
 myfoldl :: (b -> a -> b) -> b -> [a] -> b
 myfoldl _ a [] = a
 myfoldl f acc (x:xs) = foldl f (f acc x) xs
+
+myReverse :: [a] -> [a]
+myReverse = foldl (flip (:)) []

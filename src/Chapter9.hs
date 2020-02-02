@@ -22,6 +22,7 @@ module Chapter9
     howManyMul3,
     deleteArticle,
     myZip,
+    myZipWith,
     myZip2,
     toUpperTheFirstChar,
     caesarCipher,

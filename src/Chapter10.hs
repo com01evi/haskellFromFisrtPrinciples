@@ -4,6 +4,7 @@ module Chapter10
     myfoldl,
     myReverse,
     e,
+    threeAcc
     ) where
 
 myfoldr :: (a -> b -> b) -> b -> [a] -> b
@@ -46,3 +47,6 @@ h = foldl (flip const) 'a' "burritos"
 
 i :: Int
 i = foldl (flip const) 0 [1..5]
+
+threeAcc :: [String] -> String
+threeAcc = foldr (\x acc -> (take 3 x) ++ acc) ""

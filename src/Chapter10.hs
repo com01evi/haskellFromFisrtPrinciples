@@ -4,8 +4,13 @@ module Chapter10
     myfoldl,
     myReverse,
     e,
-    threeAcc
+    threeAcc,
+    theDatabase,
+    getUTCTimeList,
+    getNbNumberList
     ) where
+
+import Data.Time
 
 myfoldr :: (a -> b -> b) -> b -> [a] -> b
 myfoldr _ a [] = a
@@ -50,3 +55,46 @@ i = foldl (flip const) 0 [1..5]
 
 threeAcc :: [String] -> String
 threeAcc = foldr (\x acc -> (take 3 x) ++ acc) ""
+
+--Exercise: Database processing
+
+data DatabaseItem = DbString String
+                  | DbNumber Integer
+                  | DbDate UTCTime
+                  deriving (Eq, Ord, Show)
+
+theDatabase :: [DatabaseItem]
+theDatabase = [ DbDate (UTCTime (fromGregorian 1911 5 1) (secondsToDiffTime 34123))
+              , DbNumber 9001
+              , DbString "Hello, world!"
+              , DbDate (UTCTime (fromGregorian 1921 5 1) (secondsToDiffTime 34123))
+              ]
+
+--1.
+isDbData :: DatabaseItem -> Bool
+isDbData (DbDate a) = True
+isDbData _ = False
+
+getUTCTime :: DatabaseItem -> UTCTime
+getUTCTime (DbDate u) = u
+
+getUTCTimeList :: [DatabaseItem] -> [UTCTime]
+getUTCTimeList = foldr (\x acc -> if isDbData x then getUTCTime x : acc else acc) []
+
+--2.
+isDbNumber :: DatabaseItem -> Bool
+isDbNumber (DbNumber i) = True
+isDbNumber _ = False
+
+getDbNumber :: DatabaseItem -> Integer
+getDbNumber (DbNumber i) = i
+
+getNbNumberList :: [DatabaseItem] -> [Integer]
+getNbNumberList = foldr (\x acc -> if isDbNumber x then getDbNumber x : acc else acc) []
+
+--3.
+getMostRecentUTCTime :: [DatabaseItem] -> UTCTime
+getMostRecentUTCTime = foldr1 compareUTCTime . getUTCTimeList
+
+compareUTCTime :: UTCTime -> UTCTime -> UTCTime
+compareUTCTime t acc = if compare t acc == GT then t else acc

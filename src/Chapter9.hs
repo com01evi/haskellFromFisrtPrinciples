@@ -28,6 +28,7 @@ module Chapter9
     caesarCipher,
     unCaesar,
     myAny,
+    myAny2,
     myOr,
     myElem1,
     myElem2,
@@ -192,6 +193,10 @@ myAny _ [] = False
 myAny f (x:xs)
   | f x = True
   | otherwise = myAny f xs
+
+myAny2 :: (a -> Bool) -> [a] -> Bool
+myAny2 _ [] = False
+myAny2 f (x:xs) = f x || myAny f xs
 
 myElem1 :: (Eq a) => a -> [a] -> Bool
 myElem1 _ [] = False

@@ -7,7 +7,10 @@ module Chapter10
     threeAcc,
     theDatabase,
     getUTCTimeList,
-    getNbNumberList
+    getMostRecentUTCTime,
+    getDbNumberList,
+    sumDb,
+    avgDb
     ) where
 
 import Data.Time
@@ -67,6 +70,7 @@ theDatabase :: [DatabaseItem]
 theDatabase = [ DbDate (UTCTime (fromGregorian 1911 5 1) (secondsToDiffTime 34123))
               , DbNumber 9001
               , DbString "Hello, world!"
+              , DbNumber 1000
               , DbDate (UTCTime (fromGregorian 1921 5 1) (secondsToDiffTime 34123))
               ]
 
@@ -89,12 +93,24 @@ isDbNumber _ = False
 getDbNumber :: DatabaseItem -> Integer
 getDbNumber (DbNumber i) = i
 
-getNbNumberList :: [DatabaseItem] -> [Integer]
-getNbNumberList = foldr (\x acc -> if isDbNumber x then getDbNumber x : acc else acc) []
+getDbNumberList :: [DatabaseItem] -> [Integer]
+getDbNumberList = foldr (\x acc -> if isDbNumber x then getDbNumber x : acc else acc) []
 
 --3.
 getMostRecentUTCTime :: [DatabaseItem] -> UTCTime
-getMostRecentUTCTime = foldr1 compareUTCTime . getUTCTimeList
+getMostRecentUTCTime = foldr1 max . getUTCTimeList
 
 compareUTCTime :: UTCTime -> UTCTime -> UTCTime
 compareUTCTime t acc = if compare t acc == GT then t else acc
+
+--4.
+sumDb :: [DatabaseItem] -> Integer
+sumDb = foldr (\x acc -> if isDbNumber x then (getDbNumber x) + acc else acc) 0
+
+--5.
+avgDb :: [DatabaseItem] -> Double
+avgDb = uncurry (/) . getavgElem2
+  where getavgElem :: [DatabaseItem] -> (Double,Double)
+        getavgElem = ((,) <$> fromIntegral . sum <*> fromIntegral . length) . getDbNumberList
+        getavgElem2 :: [DatabaseItem] -> (Double,Double)
+        getavgElem2 = foldr (\x (y,z) -> if isDbNumber x then ((fromIntegral (getDbNumber x))+y,1+z) else (y,z)) (0.0,0.0)

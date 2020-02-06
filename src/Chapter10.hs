@@ -134,4 +134,4 @@ fibsN :: Int -> Int
 fibsN = (!!) fibs 
 
 myFact :: [Int]
-myFact = drop 1 $ scanl (*) 1 [1..]
+myFact = scanl (*) 1 [2..]

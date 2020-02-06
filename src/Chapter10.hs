@@ -10,7 +10,9 @@ module Chapter10
     getMostRecentUTCTime,
     getDbNumberList,
     sumDb,
-    avgDb
+    avgDb,
+    fibsN,
+    myFact
     ) where
 
 import Data.Time
@@ -21,7 +23,7 @@ myfoldr f a (x:xs) = f x (myfoldr f a xs)
 
 myfoldl :: (b -> a -> b) -> b -> [a] -> b
 myfoldl _ a [] = a
-myfoldl f acc (x:xs) = foldl f (f acc x) xs
+myfoldl f acc (x:xs) = myfoldl f (f acc x) xs
 
 myReverse :: [a] -> [a]
 myReverse = foldl (flip (:)) []
@@ -114,3 +116,22 @@ avgDb = uncurry (/) . getavgElem2
         getavgElem = ((,) <$> fromIntegral . sum <*> fromIntegral . length) . getDbNumberList
         getavgElem2 :: [DatabaseItem] -> (Double,Double)
         getavgElem2 = foldr (\x (y,z) -> if isDbNumber x then ((fromIntegral (getDbNumber x))+y,1+z) else (y,z)) (0.0,0.0)
+
+myScanl :: (b -> a -> b) -> b -> [a] -> [b]
+myScanl f a ls =
+  a : (case ls of
+         [] -> []
+         (x:xs) -> myScanl f (f a x) xs )
+
+myScanr :: (a -> b -> b) -> b -> [a] -> [b]
+myScanr _ _ [] = []
+myScanr f a (x:xs) = (myScanr f a xs) ++ [f x a]
+
+fibs :: [Int]
+fibs = 1 : scanl (+) 1 fibs
+
+fibsN :: Int -> Int
+fibsN = (!!) fibs 
+
+myFact :: [Int]
+myFact = drop 1 $ scanl (*) 1 [1..]

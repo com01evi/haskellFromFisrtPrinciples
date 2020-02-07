@@ -12,7 +12,11 @@ module Chapter10
     sumDb,
     avgDb,
     fibsN,
-    myFact
+    myFact,
+    stopVowelStop,
+    onlyStartWithP,
+    nounVerbNoun,
+    myAny3
     ) where
 
 import Data.Time
@@ -134,4 +138,46 @@ fibsN :: Int -> Int
 fibsN = (!!) fibs 
 
 myFact :: [Int]
-myFact = drop 1 $ scanl (*) 1 [1..]
+myFact = scanl (*) 1 [2..]
+
+--Chapter Exercise
+--1-a)
+stops = "pbtdkg"
+vowels = "aeiou"
+
+stopVowelStop :: [(Char,Char,Char)]
+stopVowelStop = [(x,y,z) | x <- stops, y <- vowels, z <- stops]
+
+--1-b)
+onlyStartWithP :: [(Char,Char,Char)]
+onlyStartWithP = filter p stopVowelStop
+  where p :: (Char,Char,Char) -> Bool
+        p ('p',_,_) = True
+        p _ = False
+
+--1-c)
+nouns = ["cat", "dog", "human"]
+verbs = ["likes", "loves", "sees"]
+
+nounVerbNoun :: [(String,String,String)]
+nounVerbNoun = [(x,y,z) | x <- nouns, y <- verbs , z <- nouns]
+
+--2
+seekritFunc :: String -> Int
+seekritFunc = div <$> sum . map length . words <*> length . words
+
+seekritFunc2 :: (Fractional a) => String -> a
+seekritFunc2 = (/) <$> fromIntegral . sum . map length . words <*> fromIntegral . length . words
+
+--Rewriting functions using folds
+
+myAnd :: [Bool] -> Bool
+myAnd = foldr (&&) True
+
+--1
+myOr :: [Bool] -> Bool
+myOr = foldr (||) False
+
+--2
+myAny3 :: (a -> Bool) -> [a] -> Bool
+myAny3 f = foldr (\x acc -> f x || acc) False

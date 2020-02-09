@@ -184,7 +184,6 @@ myAny3 :: (a -> Bool) -> [a] -> Bool
 myAny3 f = foldr (\x acc -> f x || acc) False
 
 --3
-
 myElem3 :: (Eq a) => a -> [a] -> Bool
 myElem3 a = foldr (\x acc -> (a == x) || acc) False
 

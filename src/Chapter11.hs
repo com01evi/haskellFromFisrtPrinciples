@@ -1,3 +1,5 @@
+{-# LANGUAGE GeneralizedNewtypeDeriving, FlexibleInstances #-}
+
 module Chapter11
     (
     MyBool,
@@ -46,3 +48,31 @@ data Example1 = Example1 Int deriving(Eq, Show)
 data Example2 = Example2 Int String deriving(Eq, Show)
 
 data Example = MakeExample Int deriving(Show)
+
+newtype Goat = Goat Int deriving(Eq, Show, TooMany)
+
+newtype Cow = Cow Int deriving(Eq, Show)
+
+newtype TupleIntString = TupleIntString (Int,String) deriving(Eq, Show)
+
+tooManyGoats :: Goat -> Bool
+tooManyGoats (Goat x) = x > 42
+
+class TooMany a where
+  tooMany :: a -> Bool
+
+instance TooMany Int where
+  tooMany n = n > 43
+
+instance TooMany TupleIntString where
+  tooMany (TupleIntString (n,_)) = tooMany n
+--Exercises: Logic Goats
+
+instance TooMany (Int,String) where
+  tooMany (n,_) = tooMany n
+
+instance TooMany (Int, Int) where
+  tooMany (x,y) = tooMany (x+y)
+
+instance (Num a, TooMany a) => TooMany (a,a) where
+  tooMany (x,y) = tooMany (x+y)

@@ -1,10 +1,13 @@
-{-# LANGUAGE GeneralizedNewtypeDeriving, FlexibleInstances #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving, FlexibleInstances, NegativeLiterals #-}
 
 module Chapter11
     (
     MyBool,
-    Example(MakeExample)
+    Example(MakeExample),
+    Person(Person,name,age),
     ) where
+        
+import Data.Int
 
 data MyBool = MyTrue | MyFalse
 
@@ -66,6 +69,7 @@ instance TooMany Int where
 
 instance TooMany TupleIntString where
   tooMany (TupleIntString (n,_)) = tooMany n
+
 --Exercises: Logic Goats
 
 instance TooMany (Int,String) where
@@ -76,3 +80,23 @@ instance TooMany (Int, Int) where
 
 instance (Num a, TooMany a) => TooMany (a,a) where
   tooMany (x,y) = tooMany (x+y)
+
+--Exercises: Pity the Bool
+--1.
+data BigSmall = Big Bool | Small Bool deriving(Eq, Show)
+
+--2.
+data NumberOrBool = Numba Int8 | BoolyBool Bool deriving(Eq, Show)
+
+myNumba = Numba (-128)
+
+data QuantumBool = QuantumTrue
+                 | QuantumFalse
+                 | QuantumBoth
+                 deriving(Eq, Show)
+
+type TwoQs = (QuantumBool, QuantumBool)
+
+data Person = Person { name :: String
+                     , age :: Int
+                     }

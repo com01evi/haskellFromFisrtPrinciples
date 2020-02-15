@@ -100,3 +100,27 @@ type TwoQs = (QuantumBool, QuantumBool)
 data Person = Person { name :: String
                      , age :: Int
                      }
+
+--data Fiction = Fiction deriving (Show)
+--
+--data NonFiction = NonFiction deriving (Show)
+
+--data BookType = FictionBook Fiction
+ --             | NonFictionBook NonFiction
+  --            deriving(Show)
+
+type AuthorName = String
+
+--data Author = Author (AuthorName, BookType)
+
+data Author = Fiction AuthorName
+            | NonFiction AuthorName
+            deriving(Eq, Show)
+
+type Gardener = String
+
+data Garden = Gardenia Gardener
+            | Daisy Gardener
+            | Rose Gardener
+            | Lilac Gardener
+            deriving(Show)

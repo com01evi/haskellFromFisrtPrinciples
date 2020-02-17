@@ -5,6 +5,11 @@ module Chapter11
     MyBool,
     Example(MakeExample),
     Person(Person,name,age),
+    RecordProduct(first, second),
+    myRecord,
+    myRecord2,
+    allProgrammers,
+    allProgrammers2
     ) where
         
 import Data.Int
@@ -203,3 +208,68 @@ data AskFm = AskFm deriving(Eq, Show)
 
 socialnetwork :: Sum Twitter AskFm
 socialnetwork = First Twitter
+
+myRecord :: RecordProduct Int Float
+myRecord = RecordProduct 4 4.011
+
+myRecord2 :: RecordProduct Int Float
+myRecord2 = RecordProduct{
+                first = 3,
+                second = 4.001
+            }
+
+data OperatingSystem = Linux
+                     | OpenBSD
+                     | Mac
+                     | Windows
+                     deriving(Eq, Show)
+
+data ProgLang = Haskell
+              | Agda
+              | Idris
+              | Purescript
+              deriving(Eq, Show)
+
+data Programmer = Programmer {
+                      os :: OperatingSystem,
+                      lang :: ProgLang
+                  }deriving(Eq, Show)
+
+feelingWizardly :: Programmer
+feelingWizardly = Programmer{
+                      os = OpenBSD,
+                      lang = Haskell
+                  }
+
+allProgrammers :: [Programmer]
+allProgrammers = [Programmer x y | x <- [Linux, OpenBSD, Mac, Windows], y <- [Haskell, Agda, Idris, Purescript]]
+
+allProgrammers2 :: [Programmer]
+allProgrammers2 = do
+    x <- [Linux, OpenBSD, Mac, Windows]
+    y <- [Haskell, Agda, Idris, Purescript]
+    return (Programmer x y)
+
+newtype Name2 = Name2 String deriving(Eq, Show)
+
+newtype Acres = Acres Int deriving(Eq, Show)
+
+data FarmerType = DairyFarmer
+                | WheatFarmer
+                | SoybeanFarmer
+                deriving (Eq, Show)
+
+data Farmer = Farmer {
+                  name2 :: Name2,
+                  acres :: Acres,
+                  farmerType :: FarmerType
+                  }deriving(Eq, Show)
+
+isDairyFarmer :: Farmer -> Bool
+isDairyFarmer (Farmer _ _ DairyFarmer) = True
+isDairyFarmer _ = False
+
+isDairyFarmer2 :: Farmer -> Bool
+isDairyFarmer2 farmer = case farmerType farmer of
+  DairyFarmer -> True
+  _ -> False

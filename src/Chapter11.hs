@@ -9,7 +9,12 @@ module Chapter11
     myRecord,
     myRecord2,
     allProgrammers,
-    allProgrammers2
+    allProgrammers2,
+    List(Nil,Cons),
+    makeTree,
+    treeMap,
+    makeListFromTree,
+    treeFold
     ) where
         
 import Data.Int
@@ -273,3 +278,36 @@ isDairyFarmer2 :: Farmer -> Bool
 isDairyFarmer2 farmer = case farmerType farmer of
   DairyFarmer -> True
   _ -> False
+
+data List a = Nil | Cons a (List a)
+
+data BTree a = Leaf | Node (BTree a) a (BTree a) deriving(Eq, Ord, Show)
+
+myinsert :: (Eq a, Ord a) => a -> BTree a -> BTree a
+myinsert x (Leaf) = Node Leaf x Leaf
+myinsert x (Node left y right) 
+  | x == y = Node left y right
+  | x > y = Node left y (myinsert x right)
+  | x < y = Node (myinsert x left) y right
+
+treeMap :: (a -> b) -> BTree a -> BTree b
+treeMap f Leaf = Leaf
+treeMap f (Node left x right) = Node (treeMap f left) (f x) (treeMap f right)
+
+makeTree :: (Ord a) => [a] -> BTree a
+makeTree = foldr myinsert Leaf
+
+makeListFromTree :: (Ord a) => BTree a -> [a]
+makeListFromTree Leaf = []
+makeListFromTree (Node left x right) = (makeListFromTree left) ++ [x] ++ (makeListFromTree right)
+
+mysort :: (Ord a) => [a] -> [a]
+mysort = makeListFromTree . makeTree 
+
+treeFold :: (a -> b -> b) -> b -> BTree a -> b
+treeFold f acc Leaf = acc
+treeFold f acc (Node left x right) = treeFold f (f x (treeFold f acc left)) right
+
+listFoldr :: (a -> b -> b) -> b -> [a] -> b
+listFoldr f acc [] = acc
+listFoldr f acc (x:xs) = f x (listFoldr f acc xs)

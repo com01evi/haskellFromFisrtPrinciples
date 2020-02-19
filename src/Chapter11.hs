@@ -14,10 +14,14 @@ module Chapter11
     makeTree,
     treeMap,
     makeListFromTree,
-    treeFold
+    treeFold,
+    vigenereCipher,
+    capitalizeWords
     ) where
         
 import Data.Int
+import Data.Char
+import Chapter9(caesarCipher)
 
 data MyBool = MyTrue | MyFalse
 
@@ -311,3 +315,26 @@ treeFold f acc (Node left x right) = treeFold f (f x (treeFold f acc left)) righ
 listFoldr :: (a -> b -> b) -> b -> [a] -> b
 listFoldr f acc [] = acc
 listFoldr f acc (x:xs) = f x (listFoldr f acc xs)
+
+--Chapter Exercises
+
+vigenereCipher :: String -> String -> String
+vigenereCipher [] [] = []
+vigenereCipher (x:xs) (y:ys) = if x == ' ' then x:vigenereCipher xs ys
+                                           else (chr . shift i . ord) x : vigenereCipher xs ys
+  where shift :: Int -> Int -> Int
+        shift n x
+          | x + (n `mod` 26) > 122 = 96 + (x + (n `mod` 26) - 122)
+          | otherwise = x + (n `mod` 26)
+        i :: Int
+        i = (ord y) - (ord 'a')
+          
+
+isSubseqOf :: (Eq a) => [a] -> [a] -> Bool
+isSubseqOf (x:xs) ys = elem x ys && isSubseqOf xs ys
+
+capitalizeWords :: String -> [(String, String)]
+capitalizeWords = map ((,) <$> id <*> capitalize) . words
+  where capitalize :: String -> String
+        capitalize [] = ""
+        capitalize (x:xs) = toUpper x:xs

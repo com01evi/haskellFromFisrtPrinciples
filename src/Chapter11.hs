@@ -16,11 +16,17 @@ module Chapter11
     makeListFromTree,
     treeFold,
     vigenereCipher,
-    capitalizeWords
+    capitalizeWords,
+    capitalizeParagraph,
+    splitSentence,
+    reverseTaps,
+    daphone,
+    cellPhonesDead
     ) where
         
 import Data.Int
 import Data.Char
+import Data.List
 import Chapter9(caesarCipher)
 
 data MyBool = MyTrue | MyFalse
@@ -338,3 +344,49 @@ capitalizeWords = map ((,) <$> id <*> capitalize) . words
   where capitalize :: String -> String
         capitalize [] = ""
         capitalize (x:xs) = toUpper x:xs
+
+capitalizeWord :: String -> String
+capitalizeWord [] = ""
+capitalizeWord (x:xs) = toUpper x:xs
+
+capitalizeParagraph :: String -> String
+capitalizeParagraph = concatWithDots . map capitalizeWord . splitSentence
+
+splitSentence :: String -> [String]
+splitSentence [] = []
+splitSentence xs = takeWhile (/='.') xs : splitSentence (drop 2 (dropWhile (/='.') xs))
+
+concatWithDots :: [String] -> String
+concatWithDots [] = []
+concatWithDots (x:[]) = x ++ "."
+concatWithDots (x:xs) = x ++ ". " ++ concatWithDots xs
+
+--Phone Exercise
+
+type Key = Char
+type CharList = String
+
+data Daphone = Daphone [(Key, CharList)]
+
+daphone = Daphone [('1',"1"),('2',"abc2"),('3',"def3"),('4',"ghi4"),('5',"jkl5"),('6',"mno6"),('7',"pqrs7"),('8',"tuv8"),('9',"wxyz"),('*',"^"),('0',"+ "),('#', ".,")]
+
+type Presses = Int
+
+reverseTaps :: Daphone -> Char -> [(Key,Presses)]
+reverseTaps (Daphone dp) c = if isUpper c 
+  then ('*', 1): reverseTaps' (Daphone dp) (toLower c)
+  else reverseTaps' (Daphone dp) c
+
+reverseTaps' :: Daphone -> Char -> [(Key,Presses)]
+reverseTaps' (Daphone dp) c = [reverseTaps'' button]
+  where reverseTaps'' :: Daphone -> (Key,Presses)
+        reverseTaps'' (Daphone dp) = (((,) <$> fst <*> (myelemIndex c . snd)) . head) dp
+        button :: Daphone
+        button = Daphone (filter (elem c . snd) dp)
+        myelemIndex :: (Eq a) => a -> [a] -> Int 
+        myelemIndex a xs = case elemIndex a xs of
+            (Just n) -> n + 1
+            Nothing -> 0
+
+cellPhonesDead :: Daphone -> String -> [(Key,Presses)]
+cellPhonesDead dp = concat . map (reverseTaps dp)

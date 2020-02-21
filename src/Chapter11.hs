@@ -21,13 +21,20 @@ module Chapter11
     splitSentence,
     reverseTaps,
     daphone,
-    cellPhonesDead
+    cellPhonesDead,
+    convo,
+    fingerTaps,
+    mostPopularLetter,
+    countNumber,
+    coolestLtr,
+    coolestWord
     ) where
         
 import Data.Int
 import Data.Char
 import Data.List
-import Chapter9(caesarCipher)
+import Chapter9(caesarCipher,concatWithSpace)
+import GHC.Exts(sortWith)
 
 data MyBool = MyTrue | MyFalse
 
@@ -365,11 +372,22 @@ concatWithDots (x:xs) = x ++ ". " ++ concatWithDots xs
 
 type Key = Char
 type CharList = String
-
 data Daphone = Daphone [(Key, CharList)]
 
-daphone = Daphone [('1',"1"),('2',"abc2"),('3',"def3"),('4',"ghi4"),('5',"jkl5"),('6',"mno6"),('7',"pqrs7"),('8',"tuv8"),('9',"wxyz"),('*',"^"),('0',"+ "),('#', ".,")]
+daphone = Daphone [('1',"1"),('2',"abc2"),('3',"def3"),('4',"ghi4"),('5',"jkl5"),('6',"mno6"),('7',"pqrs7"),('8',"tuv8"),('9',"wxyz"),('*',"^"),('0',"+ 0"),('#', ".,")]
 
+convo :: [String]
+convo = [ "Wanna play 20 questions"
+        , "Ya"
+        , "U 1st haha"
+        , "Lol ok. Have you ever tasted alcohol"
+        , "Lol ya"
+        , "Wow ur cool haha. Ur turn"
+        , "Ok. Do u think I am pretty Lol"
+        , "Lol ya"
+        , "Just makeing sure rofl ur turn"
+        , "l is No.1 lllll"
+        ]
 type Presses = Int
 
 reverseTaps :: Daphone -> Char -> [(Key,Presses)]
@@ -390,3 +408,19 @@ reverseTaps' (Daphone dp) c = [reverseTaps'' button]
 
 cellPhonesDead :: Daphone -> String -> [(Key,Presses)]
 cellPhonesDead dp = concat . map (reverseTaps dp)
+
+fingerTaps :: [(Key, Presses)] -> Presses
+fingerTaps = foldr (\x acc -> ((+acc) . snd) x) 0
+
+mostPopularLetter :: (Eq a) => [a] -> a
+mostPopularLetter = fst . head . reverse . sortWith snd . countNumber
+
+countNumber :: (Eq a) => [a] -> [(a, Int)]
+countNumber = foldr (\x acc -> if elem x (map fst acc) then (((,) <$> fst <*> (+1) . snd) . head . filter ((==x) . fst)) acc : filter ((/=x) . fst) acc
+                                                               else ((x,1):acc)) []
+
+coolestLtr :: [String] -> Char
+coolestLtr = mostPopularLetter . concat
+
+coolestWord :: [String] -> String
+coolestWord = mostPopularLetter . words . concatWithSpace 

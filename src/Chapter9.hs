@@ -35,7 +35,8 @@ module Chapter9
     myReverse1,
     myReverse2,
     myMaximumBy,
-    myMinimumBy
+    myMinimumBy,
+    concatWithSpace
     ) where
 
 import Data.Bool (bool)

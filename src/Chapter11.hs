@@ -24,10 +24,13 @@ module Chapter11
     cellPhonesDead,
     convo,
     fingerTaps,
-    mostPopularLetter,
+    mostPopularElement,
     countNumber,
     coolestLtr,
-    coolestWord
+    coolestWord,
+    Expr(Lit,Add),
+    eval,
+    printExpr
     ) where
         
 import Data.Int
@@ -412,15 +415,26 @@ cellPhonesDead dp = concat . map (reverseTaps dp)
 fingerTaps :: [(Key, Presses)] -> Presses
 fingerTaps = foldr (\x acc -> ((+acc) . snd) x) 0
 
-mostPopularLetter :: (Eq a) => [a] -> a
-mostPopularLetter = fst . head . reverse . sortWith snd . countNumber
+mostPopularElement :: (Eq a) => [a] -> a
+mostPopularElement = fst . head . reverse . sortWith snd . countNumber
 
 countNumber :: (Eq a) => [a] -> [(a, Int)]
 countNumber = foldr (\x acc -> if elem x (map fst acc) then (((,) <$> fst <*> (+1) . snd) . head . filter ((==x) . fst)) acc : filter ((/=x) . fst) acc
                                                                else ((x,1):acc)) []
 
 coolestLtr :: [String] -> Char
-coolestLtr = mostPopularLetter . concat
+coolestLtr = mostPopularElement . concat
 
 coolestWord :: [String] -> String
-coolestWord = mostPopularLetter . words . concatWithSpace 
+coolestWord = mostPopularElement . words . concatWithSpace 
+
+data Expr = Lit Integer
+          | Add Expr Expr
+
+eval :: Expr -> Integer
+eval (Lit n) = n
+eval (Add ex1 ex2) = eval ex1 + eval ex2
+
+printExpr :: Expr -> String
+printExpr (Lit n) = show n
+printExpr (Add ex1 ex2) = (printExpr ex1) ++ " + " ++ (printExpr ex2)

@@ -2,7 +2,14 @@ module Chapter12
     (
       mkPerson
     , mkPerson2
+    , replacethe
+    , countTheBeforeVowel
+    , countVowels
+    , countVowels'
+    , mkWord
     ) where
+
+import Chapter9(concatWithSpace)
 
 type Name = String
 
@@ -36,3 +43,39 @@ mkPerson2 name age = mkPerson2' (nameCheck name) (ageCheck age)
         mkPerson2' (Right name) (Left ys) = Left ys
         mkPerson2' (Left xs) (Right age) = Left xs
         mkPerson2' (Left xs) (Left ys) = Left (xs++ys)
+
+data Unary a = Unary a deriving(Show)
+
+r :: a -> f a
+r = undefined
+
+replacethe :: String -> String
+replacethe = concatWithSpace . foldr (\x acc -> if x == "the" then "a":acc else x:acc) [] . words
+
+countTheBeforeVowel :: String -> Int
+countTheBeforeVowel = countTheBeforeVowel' . words
+
+countTheBeforeVowel' :: [String] -> Int
+countTheBeforeVowel' [] = 0
+countTheBeforeVowel' (_:[]) = 0
+countTheBeforeVowel' (x1:x2:xs) = if x1 == "the" && elem (head x2) "aeiou"
+                                 then (1+) (countTheBeforeVowel' xs)
+                                 else countTheBeforeVowel' xs
+
+countVowels :: String -> Int
+countVowels = length . filter (flip elem "aeiou")
+
+countConsonants :: String -> Int
+countConsonants = length . filter (not . flip elem "aeiou")
+
+countVowels' :: String -> Int
+countVowels' = foldr (\x acc -> if elem x "eaiou" then 1+acc else acc) 0
+
+newtype Word' = Word' String deriving(Eq, Show)
+
+mkWord :: String -> Maybe Word'
+mkWord s = if v < c 
+           then Just $ Word' s
+           else Nothing
+  where 
+        (v,c) = ((,) <$> countVowels <*> countConsonants) s

@@ -14,9 +14,13 @@ module Chapter12
     , flipMaybe
     , myiterate
     , myUnfoldr
+    , unfold
+    , treeBuild
+    , takeTree
     ) where
 
 import Chapter9(concatWithSpace)
+import Chapter11(BTree(Leaf,Node))
 
 type Name = String
 
@@ -183,3 +187,16 @@ myUnfoldr f x = case f x of
 
 myiterate' :: (a -> a) -> a -> [a]
 myiterate' f = myUnfoldr (\x -> Just (x, f x))
+
+unfold :: (a -> Maybe (a, b, a)) -> a -> BTree b
+unfold f x = case f x of
+  Nothing -> Leaf
+  Just (x, y, z) -> Node (unfold f x) y (unfold f z)
+
+treeBuild :: Integer -> BTree Integer
+treeBuild n = takeTree n $ unfold (\x -> Just ((x+1),x,(x+1))) 0
+
+takeTree :: Integer -> BTree a -> BTree a
+takeTree _ Leaf = Leaf
+takeTree 0 (Node left x right)= Leaf
+takeTree n (Node left x right) = Node (takeTree (n-1) left) x (takeTree (n-1) right)

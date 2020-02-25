@@ -30,7 +30,8 @@ module Chapter11
     coolestWord,
     Expr(Lit,Add),
     eval,
-    printExpr
+    printExpr,
+    BTree(Leaf, Node)
     ) where
         
 import Data.Int

@@ -39,6 +39,7 @@ library
       Chapter10
       Chapter11
       Chapter12
+      Chapter13
   other-modules:
       Paths_haskellFromFisrtPrinciples
   hs-source-dirs:

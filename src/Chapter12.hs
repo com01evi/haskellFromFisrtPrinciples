@@ -198,5 +198,5 @@ treeBuild n = takeTree n $ unfold (\x -> Just ((x+1),x,(x+1))) 0
 
 takeTree :: Integer -> BTree a -> BTree a
 takeTree _ Leaf = Leaf
-takeTree 0 (Node left x right)= Leaf
+takeTree 0 _ = Leaf
 takeTree n (Node left x right) = Node (takeTree (n-1) left) x (takeTree (n-1) right)

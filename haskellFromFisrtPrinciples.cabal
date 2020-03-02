@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c9d3aa7fd16404fccfe6ea439603b7ee07e9988483a5a948d9d4184195443de5
+-- hash: f9e8e537547c3ae1486842d87333519958024faede3cd6c777004933fd755a83
 
 name:           haskellFromFisrtPrinciples
 version:        0.1.0.0
@@ -23,31 +23,32 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/com01evi/haskellFromFisrtPrinciples
+  location: https://github.com/githubuser/haskellFromFisrtPrinciples
 
 library
   exposed-modules:
-      Chapter1,
-      Chapter2,
-      Chapter3,
-      Chapter4,
-      Chapter5,
-      Chapter6,
-      Chapter7,
-      Chapter8,
-      Chapter9,
-      Chapter10,
-      Chapter11,
-      Chapter12,
-      Chapter13.Hello,
+      Chapter1
+      Chapter10
+      Chapter11
+      Chapter12
       Chapter13.DogsRule
+      Chapter13.Hello
+      Chapter13.Person
+      Chapter2
+      Chapter3
+      Chapter4
+      Chapter5
+      Chapter6
+      Chapter7
+      Chapter8
+      Chapter9
   other-modules:
       Paths_haskellFromFisrtPrinciples
   hs-source-dirs:
       src
   build-depends:
-      base >=4.7 && <5,
-      time
+      base >=4.7 && <5
+    , time
   default-language: Haskell2010
 
 executable haskellFromFisrtPrinciples-exe
@@ -60,6 +61,7 @@ executable haskellFromFisrtPrinciples-exe
   build-depends:
       base >=4.7 && <5
     , haskellFromFisrtPrinciples
+    , time
   default-language: Haskell2010
 
 test-suite haskellFromFisrtPrinciples-test
@@ -73,4 +75,5 @@ test-suite haskellFromFisrtPrinciples-test
   build-depends:
       base >=4.7 && <5
     , haskellFromFisrtPrinciples
+    , time
   default-language: Haskell2010

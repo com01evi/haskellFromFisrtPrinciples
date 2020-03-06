@@ -23,3 +23,5 @@ main = hspec $ do
     it "returns one-zero-zero for 100" $ do
       wordNumber 100 `shouldBe` "one-zero-zero"
 
+    it "returns nine-zero-zero-one for 9001" $ do
+      wordNumber 9001 `shouldBe` "nine-zero-zero-one"

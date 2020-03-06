@@ -12,6 +12,7 @@ import Chapter10
 import qualified Chapter13.Hello as H
 import qualified Chapter13.DogsRule as D
 import System.IO
+import Chapter14.Arbitrary
 
 main :: IO ()
-main = hSetBuffering stdout NoBuffering >> putStr "Please input your name: " >> getLine >>= (\s -> D.dogs >> H.sayHello s)
+main = sampleOriginalData

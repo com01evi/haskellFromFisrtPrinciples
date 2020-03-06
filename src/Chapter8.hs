@@ -13,6 +13,7 @@ module Chapter8
       mul,
       mc91,
       digits,
+      digitToWord,
       wordNumber
     ) where
 

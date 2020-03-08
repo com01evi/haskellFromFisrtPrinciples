@@ -16,6 +16,7 @@ module Chapter11
     makeListFromTree,
     treeFold,
     vigenereCipher,
+    capitalizeWord,
     capitalizeWords,
     capitalizeParagraph,
     splitSentence,

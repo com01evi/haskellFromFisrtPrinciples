@@ -1,6 +1,8 @@
 module Main where
 
+import Chapter2(square)
 import Chapter8(digitToWord, digits, wordNumber)
+import Chapter11 (capitalizeWord)
 import Chapter14.Exercise(half, halfIndentity, listOrdered, plusAssociative, multAssociative)
 import Data.List(sort)
 import Test.QuickCheck
@@ -58,3 +60,39 @@ main = hspec $ do
 
     it "tests whether ^ is associative or not" $ do
       property $ \x y z-> (x :: Int) ^ ((y :: Int) ^ (z :: Int)) == (x ^ y) ^ z
+
+    it "tests reverse of reverse is equivalent to id" $ do
+      property $ \x -> (reverse . reverse) x == id (x :: [Int])
+
+    it "tests definition of ($)" $ do
+      property $ \x -> id $ (x :: Int) == id x
+
+    it "tests definition of (.)" $ do
+      property $ \x -> (id . id) (x :: Int) == id (id x)
+
+    it "tests foldr (:) is equivalent to (++)" $ do
+      property $ \xs ys -> foldr (:) xs ys == xs ++ (ys :: [Int])
+
+    it "tests foldr (++) [] is equivalent to (concat)" $ do
+      property $ \xs -> foldr (++) [] xs == concat (xs :: [String])
+
+    it "tests length (take n xs) is equivalent to n" $ do
+      property $ \n xs -> length (take n (xs :: [Int])) == n 
+
+    it "tests (read . show) is equivalent to id" $ do
+      property $ \x -> (read . show) (x :: Int) == (id x)
+
+    it "tests square x is equivalent to x * x" $ do
+      property $ \x -> square x == x * (x :: Float)
+
+    it "tests square sqrt x is equivalent to id x" $ do
+      property $ \x -> (square . sqrt) x == (x :: Float)
+
+    it "tests capitalizeWord" $ do
+      property $ \x -> capitalizeWord x == (twice capitalizeWord) x && capitalizeWord x == (fourTimes capitalizeWord) x 
+
+    it "tests sort" $ do
+      property $ \x -> sort (x ::[Int]) == (twice sort) x && sort x == (fourTimes sort) x
+
+twice f = f . f
+fourTimes = twice . twice

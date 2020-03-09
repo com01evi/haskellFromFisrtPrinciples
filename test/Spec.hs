@@ -96,3 +96,14 @@ main = hspec $ do
 
 twice f = f . f
 fourTimes = twice . twice
+
+data Fool = Fulse 
+          | Frue deriving(Eq, Show)
+          
+genFool :: Gen Fool
+genFool = oneof [ return Fulse
+                , return Frue]
+
+frequentFool :: Gen Fool
+frequentFool = frequency [(2, return Fulse)
+                         ,(1, return Frue)]

@@ -21,3 +21,5 @@ listOrdered xs = snd $ foldr go (Nothing, True) xs
 plusAssociative x y z = x + (y + z) == (x + y) + z
 
 multAssociative x y z = x * (y * z) == (x * y) * z
+
+

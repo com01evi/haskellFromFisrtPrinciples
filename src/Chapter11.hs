@@ -301,7 +301,7 @@ isDairyFarmer2 farmer = case farmerType farmer of
   DairyFarmer -> True
   _ -> False
 
-data List a = Nil | Cons a (List a)
+data List a = Nil | Cons a (List a) deriving(Eq, Show)
 
 data BTree a = Leaf | Node (BTree a) a (BTree a) deriving(Eq, Ord, Show)
 

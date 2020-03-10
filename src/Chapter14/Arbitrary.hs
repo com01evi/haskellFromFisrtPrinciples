@@ -75,3 +75,4 @@ frequentSum = do
   b <- arbitrary
   frequency [ (1, return $ First a)
            , (3, return $ Second b)]
+

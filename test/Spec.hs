@@ -4,6 +4,7 @@ import Chapter2(square)
 import Chapter8(digitToWord, digits, wordNumber)
 import Chapter11 (capitalizeWord)
 import Chapter14.Exercise(half, halfIndentity, listOrdered, plusAssociative, multAssociative)
+import Chapter15.List(monoidAssoc)
 import Data.List(sort)
 import Test.QuickCheck
 import Test.Hspec
@@ -93,6 +94,10 @@ main = hspec $ do
 
     it "tests sort" $ do
       property $ \x -> sort (x ::[Int]) == (twice sort) x && sort x == (fourTimes sort) x
+      
+  describe "monoid" $ do
+    it "tests monoid assosiativity" $ do
+      property $ (monoidAssoc :: String -> String -> String -> Bool)
 
 twice f = f . f
 fourTimes = twice . twice

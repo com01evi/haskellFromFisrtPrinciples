@@ -8,6 +8,8 @@ module Chapter15.List
     , myHead
     , Listy(Listy)
     , monoidAssoc
+    , monoidLeftIdentity
+    , monoidRightIdentity
     ) where
 
 import Chapter11
@@ -71,3 +73,9 @@ madlibbinBetter' e adv noun adj = mconcat [ e
 
 monoidAssoc :: (Eq m, Monoid m) => m -> m -> m -> Bool
 monoidAssoc a b c = (a <> ( b <> c)) == ((a <> b) <> c)
+
+monoidLeftIdentity :: (Eq m, Monoid m) => m -> Bool
+monoidLeftIdentity m = (mempty <> m) == m
+
+monoidRightIdentity :: (Eq m, Monoid m) => m -> Bool
+monoidRightIdentity m = (m <> mempty)  == m

@@ -4,7 +4,7 @@ import Chapter2(square)
 import Chapter8(digitToWord, digits, wordNumber)
 import Chapter11 (capitalizeWord)
 import Chapter14.Exercise(half, halfIndentity, listOrdered, plusAssociative, multAssociative)
-import Chapter15.List(monoidAssoc,monoidLeftIdentity,monoidRightIdentity)
+import Chapter15.List(monoidAssoc,monoidLeftIdentity,monoidRightIdentity,Optional(Nada,Only), First'(getFirst'), FirstMappend, FstId)
 import Data.List(sort)
 import Test.QuickCheck
 import Test.Hspec
@@ -103,6 +103,23 @@ main = hspec $ do
     it "tests monoid right identity" $ do
       property $ (monoidRightIdentity :: String -> Bool)
 
+  describe "Bull monoid" $ do
+    it "tests Bull monoid assosiativity" $ do
+      property $ (monoidAssoc :: BullMappend)
+    it "tests Bull monoid left identity" $ do
+      property $ (monoidLeftIdentity :: Bull -> Bool)
+    it "tests monoid right identity" $ do
+      property $ (monoidRightIdentity :: Bull -> Bool)
+
+  describe "First' monoid" $ do
+    it "tests First' monoid assosiativity" $ do
+      property $ (monoidAssoc :: FirstMappend)
+    it "tests Bull monoid left identity" $ do
+      property $ (monoidLeftIdentity :: FstId)
+    it "tests monoid right identity" $ do
+      property $ (monoidRightIdentity :: FstId)
+
+
 twice f = f . f
 fourTimes = twice . twice
 
@@ -116,3 +133,16 @@ genFool = oneof [ return Fulse
 frequentFool :: Gen Fool
 frequentFool = frequency [(2, return Fulse)
                          ,(1, return Frue)]
+
+data Bull = Fools | Twoo deriving(Eq, Show)
+
+instance Arbitrary Bull where
+  arbitrary = elements [Fools, Twoo]
+
+instance Monoid Bull where
+  mempty = Fools
+  mappend _ _ = Fools
+
+instance Semigroup Bull where
+  _ <> _ = Fools
+type BullMappend = Bull -> Bull -> Bull -> Bool

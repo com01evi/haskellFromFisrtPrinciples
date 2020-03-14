@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 8894d7cff493cdc341e6cef781068274ad2192b4c5be2341e57b04f5fa4fda4d
+-- hash: d12d1c02b55f36fbfbf5a39e0d2300d94d78c46e79dd3b1838f0f7ea0435250c
 
 name:           haskellFromFisrtPrinciples
 version:        0.1.0.0
@@ -37,6 +37,7 @@ library
       Chapter14.Arbitrary
       Chapter14.Exercise
       Chapter15.List
+      Chapter15.Semigroup
       Chapter2
       Chapter3
       Chapter4

@@ -10,11 +10,16 @@ module Chapter15.List
     , monoidAssoc
     , monoidLeftIdentity
     , monoidRightIdentity
+    , Optional(Nada,Only)
+    , First'(First', getFirst')
+    , FirstMappend
+    , FstId
     ) where
 
 import Chapter11
 import qualified Data.Monoid as M
 import qualified Data.Semigroup as S
+import Test.QuickCheck
 
 list = mappend [1..3] [4..10]
 
@@ -79,3 +84,26 @@ monoidLeftIdentity m = (mempty <> m) == m
 
 monoidRightIdentity :: (Eq m, Monoid m) => m -> Bool
 monoidRightIdentity m = (m <> mempty)  == m
+
+newtype First' a = First' { getFirst' :: Optional a} deriving(Eq, Show)
+
+instance Arbitrary a => Arbitrary (First' a) where
+  arbitrary = do
+    a <- arbitrary
+    frequency [(1, return (First' Nada))
+              ,(3, return (First' (Only a)) )
+              ]
+
+instance Monoid (First' a) where
+  mempty = First' Nada
+  mappend (First' (Only a)) _ = First' (Only a)
+  mappend mempty (First' (Only a)) = (First' (Only a))
+  mappend (First' Nada) (First' Nada) = First' Nada
+
+instance Semigroup (First' a) where
+  (First' (Only a)) <> _ = First' (Only a)
+  (First' Nada) <> (First' (Only a)) = (First' (Only a))
+  (First' Nada) <> (First' Nada) = First' Nada
+type FirstMappend = First' String -> First' String -> First' String -> Bool
+
+type FstId = First' String -> Bool

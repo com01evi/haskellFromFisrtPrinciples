@@ -136,6 +136,10 @@ main = hspec $ do
     it "tests BoolConj semigroup assosiativity" $ do
       property $ (semigroupAssoc :: BoolConjAssoc)
 
+  describe "Combine semigroup" $ do
+    it "tests Combine semigroup assosiativity" $ do
+      property $ (combineAssoc)
+
 twice f = f . f
 fourTimes = twice . twice
 

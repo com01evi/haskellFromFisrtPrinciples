@@ -8,6 +8,7 @@ module Chapter15.Semigroup
     ,IdentityAssoc
     ,TwoAssoc
     ,BoolConjAssoc
+    ,combineAssoc
     ) where
 
 import Test.QuickCheck
@@ -71,5 +72,18 @@ type BoolConjAssoc = BoolConj -> BoolConj -> BoolConj -> Bool
 
 newtype Combine a b = Combine {unCombine :: a -> b}
 
+instance Show (Combine a b) where
+  show _ = "Combine function"
+
 instance Semigroup b => Semigroup (Combine a b) where
   (Combine f) <> (Combine g) = Combine (\x -> f x <> g x)
+
+instance (CoArbitrary a, Arbitrary b) => Arbitrary (Combine a b) where
+  arbitrary = do
+    f <- arbitrary
+    return $ Combine f
+
+type CombineAssoc = Combine Int (Sum Int) -> Combine Int (Sum Int) -> Combine Int (Sum Int) -> Bool
+
+combineAssoc :: Combine Int String -> Combine Int String -> Combine Int String -> Int -> Bool
+combineAssoc (Combine f) (Combine g) (Combine h) x = unCombine (((Combine f) <> (Combine g)) <> (Combine h)) x == unCombine ((Combine f) <> ((Combine g) <> (Combine h))) x

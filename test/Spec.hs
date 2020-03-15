@@ -5,6 +5,7 @@ import Chapter8(digitToWord, digits, wordNumber)
 import Chapter11 (capitalizeWord)
 import Chapter14.Exercise(half, halfIndentity, listOrdered, plusAssociative, multAssociative)
 import Chapter15.List(monoidAssoc,monoidLeftIdentity,monoidRightIdentity,Optional(Nada,Only), First'(getFirst'), FirstMappend, FstId)
+import Chapter15.Semigroup
 import Data.List(sort)
 import Test.QuickCheck
 import Test.Hspec
@@ -119,6 +120,21 @@ main = hspec $ do
     it "tests monoid right identity" $ do
       property $ (monoidRightIdentity :: FstId)
 
+  describe "Trivial semigroup" $ do
+    it "tests Trivial semigroup assosiativity" $ do
+      property $ (semigroupAssoc :: TrivialAssoc)
+
+  describe "Identity semigroup" $ do
+    it "tests Identity semigroup assosiativity" $ do
+      property $ (semigroupAssoc :: IdentityAssoc)
+
+  describe "Identity semigroup" $ do
+    it "tests Two semigroup assosiativity" $ do
+      property $ (semigroupAssoc :: TwoAssoc)
+
+  describe "BoolConj semigroup" $ do
+    it "tests BoolConj semigroup assosiativity" $ do
+      property $ (semigroupAssoc :: BoolConjAssoc)
 
 twice f = f . f
 fourTimes = twice . twice

@@ -1,14 +1,20 @@
 module Chapter15.Semigroup
     (
      NonEmpty(NonEmpty, (:|))
-    ,Trivial
+    ,Trivial(Trivial)
     ,TrivialAssoc
     ,semigroupAssoc
-    ,Identity
+    ,Identity(Identity)
     ,IdentityAssoc
+    ,Two(Two)
     ,TwoAssoc
     ,BoolConjAssoc
+    ,BoolDisjAssoc
+    ,OrAssoc
     ,combineAssoc
+    ,compAssoc
+    ,MyValidateAssoc
+    ,validateMain
     ) where
 
 import Test.QuickCheck
@@ -56,6 +62,7 @@ instance (Arbitrary a, Arbitrary b) => Arbitrary (Two a b) where
 
 type TwoAssoc = Two String String-> Two String String -> Two String String -> Bool
 
+
 newtype BoolConj = BoolConj Bool deriving(Eq, Show)
 
 instance Semigroup BoolConj where
@@ -70,6 +77,38 @@ instance Arbitrary BoolConj where
 
 type BoolConjAssoc = BoolConj -> BoolConj -> BoolConj -> Bool
 
+
+newtype BoolDisj = BoolDisj Bool deriving(Eq, Show)
+
+instance Semigroup BoolDisj where
+  (BoolDisj True) <> _ = BoolDisj True
+  _ <> (BoolDisj True) = BoolDisj True
+  (BoolDisj False) <> (BoolDisj False) = BoolDisj False
+
+instance Arbitrary BoolDisj where
+  arbitrary = do
+    b <- arbitrary
+    return $ BoolDisj b
+
+type BoolDisjAssoc = BoolDisj -> BoolDisj -> BoolDisj -> Bool
+
+
+data Or a b = Fst a | Snd b deriving(Eq, Show)
+
+instance Semigroup (Or a b) where
+  (Fst a) <> (Fst b) = Fst b
+  (Fst a) <> (Snd b) = Snd b
+  (Snd a) <> (Fst b) = Snd a
+  (Snd a) <> (Snd b) = Snd a
+
+instance (Arbitrary a, Arbitrary b) => Arbitrary (Or a b) where
+  arbitrary = do
+    a <- arbitrary
+    b <- arbitrary
+    elements [Fst a, Fst b]
+
+type OrAssoc = Or Int String -> Or Int String -> Or Int String -> Bool
+
 newtype Combine a b = Combine {unCombine :: a -> b}
 
 instance Show (Combine a b) where
@@ -83,7 +122,49 @@ instance (CoArbitrary a, Arbitrary b) => Arbitrary (Combine a b) where
     f <- arbitrary
     return $ Combine f
 
-type CombineAssoc = Combine Int (Sum Int) -> Combine Int (Sum Int) -> Combine Int (Sum Int) -> Bool
-
-combineAssoc :: Combine Int String -> Combine Int String -> Combine Int String -> Int -> Bool
+combineAssoc :: Combine Int (Sum Int) -> Combine Int (Sum Int) -> Combine Int (Sum Int) -> Int -> Bool
 combineAssoc (Combine f) (Combine g) (Combine h) x = unCombine (((Combine f) <> (Combine g)) <> (Combine h)) x == unCombine ((Combine f) <> ((Combine g) <> (Combine h))) x
+
+newtype Comp a = Comp { unComp :: (a -> a)}
+
+instance Show (Comp a) where
+  show _ = "Comp a"
+
+instance Semigroup a => Semigroup (Comp a) where
+  (Comp f) <> (Comp g) = Comp (\x -> f x <> g x)
+
+instance (CoArbitrary a, Arbitrary a) => Arbitrary (Comp a) where
+  arbitrary = do
+    f <- arbitrary
+    return $ Comp f
+
+compAssoc :: Comp (Sum Int) -> Comp (Sum Int) -> Comp (Sum Int) -> Sum Int -> Bool
+compAssoc f g h x = unComp ((f <> g) <> h) x == unComp (f <> (g <> h)) x
+
+data MyValidate a b = MyFailure a | MySuccess b deriving(Eq, Show)
+
+instance Semigroup a => Semigroup (MyValidate a b) where
+  (MySuccess a) <> _ = MySuccess a
+  (MyFailure a) <> (MySuccess b) = MySuccess b
+  (MyFailure a) <> (MyFailure b) = MyFailure (a <> b)
+
+instance (Arbitrary a, Arbitrary b) => Arbitrary (MyValidate a b) where
+  arbitrary = do
+    a <- arbitrary
+    b <- arbitrary
+    frequency [(1, return $ MyFailure a)
+              ,(3, return $ MySuccess b)
+              ]
+
+type MyValidateAssoc = MyValidate String Int -> MyValidate String Int -> MyValidate String Int -> Bool
+
+validateMain :: IO ()
+validateMain = do
+  let failure :: String -> MyValidate String Int
+      failure = MyFailure
+      success :: Int -> MyValidate String Int
+      success = MySuccess
+  print $ success 1 <> failure "blah"
+  print $ failure "woot" <> failure "blah"
+  print $ success 1 <> success 2
+  print $ failure "woot" <> success 2

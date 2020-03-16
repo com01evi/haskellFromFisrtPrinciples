@@ -1,4 +1,4 @@
-module Chapter15.List
+module Chapter15.Monoid
     (
       list
     , list2
@@ -14,12 +14,14 @@ module Chapter15.List
     , First'(First', getFirst')
     , FirstMappend
     , FstId
+    , TrivialIdentity
     ) where
 
 import Chapter11
 import qualified Data.Monoid as M
 import qualified Data.Semigroup as S
 import Test.QuickCheck
+import Chapter15.Semigroup
 
 list = mappend [1..3] [4..10]
 
@@ -107,3 +109,9 @@ instance Semigroup (First' a) where
 type FirstMappend = First' String -> First' String -> First' String -> Bool
 
 type FstId = First' String -> Bool
+
+instance Monoid Trivial where
+  mempty = Trivial
+  mappend Trivial Trivial = Trivial
+
+type TrivialIdentity = Trivial -> Bool

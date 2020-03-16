@@ -13,6 +13,7 @@ import qualified Chapter13.Hello as H
 import qualified Chapter13.DogsRule as D
 import System.IO
 import Chapter14.Arbitrary
+import Chapter15.Semigroup
 
 main :: IO ()
-main = sampleOriginalData
+main = validateMain

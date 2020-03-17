@@ -8,13 +8,19 @@ module Chapter15.Semigroup
     ,IdentityAssoc
     ,Two(Two)
     ,TwoAssoc
+    ,BoolConj(BoolConj)
     ,BoolConjAssoc
+    ,BoolDisj(BoolDisj)
     ,BoolDisjAssoc
     ,OrAssoc
+    ,Combine(Combine,unCombine)
     ,combineAssoc
+    ,Comp(Comp,unComp)
     ,compAssoc
     ,MyValidateAssoc
     ,validateMain
+    ,memAssoc
+    ,Mem(Mem,runMem)
     ) where
 
 import Test.QuickCheck
@@ -105,7 +111,7 @@ instance (Arbitrary a, Arbitrary b) => Arbitrary (Or a b) where
   arbitrary = do
     a <- arbitrary
     b <- arbitrary
-    elements [Fst a, Fst b]
+    elements [Fst a, Snd b]
 
 type OrAssoc = Or Int String -> Or Int String -> Or Int String -> Bool
 
@@ -168,3 +174,20 @@ validateMain = do
   print $ failure "woot" <> failure "blah"
   print $ success 1 <> success 2
   print $ failure "woot" <> success 2
+
+
+newtype Mem s a = Mem { runMem :: s -> (a,s)}
+
+instance Show (Mem s a) where
+  show _ = "mem functions"
+
+instance Semigroup a => Semigroup (Mem s a) where
+  (Mem f) <> (Mem g) = Mem (\s -> (((fst . f) s <> (fst . g) s), (snd . g) ((snd .f) s)))
+
+instance (CoArbitrary s, Arbitrary a, Arbitrary s) => Arbitrary (Mem s a) where
+  arbitrary = do
+    f <- arbitrary
+    return $ Mem f
+
+memAssoc :: Mem Int String -> Mem Int String -> Mem Int String -> Int -> Bool
+memAssoc f g h x = runMem ((f <> g) <> h) x == runMem (f <> (g <> h)) x

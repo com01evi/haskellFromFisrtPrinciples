@@ -15,6 +15,17 @@ module Chapter15.Monoid
     , FirstMappend
     , FstId
     , TrivialIdentity
+    , IdentityIdentity
+    , TwoIdentity
+    , BoolConjIdentity
+    , BoolDisjIdentity
+    , combineLeftIdentity
+    , combineRightIdentity
+    , compLeftIdentity
+    , compRightIdentity
+    , memLeftIdentity
+    , memRightIdentity
+    ,memMain
     ) where
 
 import Chapter11
@@ -110,8 +121,83 @@ type FirstMappend = First' String -> First' String -> First' String -> Bool
 
 type FstId = First' String -> Bool
 
+
 instance Monoid Trivial where
   mempty = Trivial
   mappend Trivial Trivial = Trivial
 
 type TrivialIdentity = Trivial -> Bool
+
+
+instance (Monoid a) => Monoid (Identity a) where
+  mempty = Identity mempty
+  mappend (Identity a) (Identity b) = Identity $ mappend a b
+
+type IdentityIdentity = Identity String -> Bool
+
+
+instance (Monoid a, Monoid b) => Monoid (Two a b) where
+  mempty = Two mempty mempty
+  mappend = (<>)
+
+type TwoIdentity = Two String String -> Bool
+
+
+instance Monoid BoolConj where
+  mempty = BoolConj True
+  mappend = (<>)
+
+type BoolConjIdentity = BoolConj -> Bool
+
+
+instance Monoid BoolDisj where
+  mempty = BoolDisj False
+  mappend = (<>)
+
+type BoolDisjIdentity = BoolDisj -> Bool
+
+
+instance (Monoid b) => Monoid (Combine a b) where
+  mempty = Combine (\x -> mempty)
+  mappend = (<>)
+
+combineLeftIdentity :: Combine Int (S.Sum Int) -> Int -> Bool
+combineLeftIdentity f x = unCombine (f <> mempty) x == unCombine f x
+
+combineRightIdentity :: Combine Int (S.Sum Int) -> Int -> Bool
+combineRightIdentity f x = unCombine (mempty <> f) x == unCombine f x
+
+
+instance (Monoid a) => Monoid (Comp a) where
+  mempty = Comp (\x -> mempty)
+  mappend = (<>)
+
+compLeftIdentity :: Comp (S.Sum Int) -> (S.Sum Int) -> Bool
+compLeftIdentity f x = unComp (f <> mempty) x == unComp f x
+
+compRightIdentity :: Comp (S.Sum Int) -> (S.Sum Int) -> Bool
+compRightIdentity f x = unComp (mempty <> f) x == unComp f x
+
+
+instance Monoid a => Monoid (Mem s a) where
+  mempty = Mem (\s -> (mempty, s))
+  mappend = (<>)
+
+memLeftIdentity :: Mem Int String -> Int -> Bool
+memLeftIdentity f x = runMem (f <> mempty) x == runMem f x
+
+memRightIdentity :: Mem Int String -> Int -> Bool
+memRightIdentity f x = runMem (mempty <> f) x == runMem f x
+
+memMain :: IO ()
+memMain = do
+  let 
+      f' = Mem $ \s -> ("hi", s + 1)
+      rmzero = runMem mempty 0
+      rmleft = runMem (f' <> mempty) 0
+      rmright = runMem (mempty <> f') 0
+  print $ rmleft
+  print $ rmright
+  print $ (rmzero :: (String, Int))
+  print $ rmleft == runMem f' 0
+  print $ rmright == runMem f' 0

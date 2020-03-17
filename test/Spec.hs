@@ -162,6 +162,52 @@ main = hspec $ do
     it "tests Trivial monoid right identity" $ do
       property $ (monoidRightIdentity :: TrivialIdentity)
 
+  describe "Identity monoid" $ do
+    it "tests Identity monoid left identity" $ do
+      property $ (monoidLeftIdentity :: IdentityIdentity)
+    it "tests Identity monoid right identity" $ do
+      property $ (monoidRightIdentity :: IdentityIdentity)
+
+  describe "Two monoid" $ do
+    it "tests Two monoid left identity" $ do
+      property $ (monoidLeftIdentity :: TwoIdentity)
+    it "tests Two monoid right identity" $ do
+      property $ (monoidRightIdentity :: TwoIdentity)
+
+  describe "BoolConj monoid" $ do
+    it "tests BoolConj monoid left identity" $ do
+      property $ (monoidLeftIdentity :: BoolConjIdentity)
+    it "tests BoolConj monoid right identity" $ do
+      property $ (monoidRightIdentity :: BoolConjIdentity)
+
+  describe "BoolDisj monoid" $ do
+    it "tests BoolDisj monoid left identity" $ do
+      property $ (monoidLeftIdentity :: BoolDisjIdentity)
+    it "tests BoolDisj monoid right identity" $ do
+      property $ (monoidRightIdentity :: BoolDisjIdentity)
+
+  describe "Combine monoid" $ do
+    it "tests Combine monoid left identity" $ do
+      property $ (combineLeftIdentity)
+    it "tests Combine monoid right identity" $ do
+      property $ (combineRightIdentity)
+
+  describe "Comp monoid" $ do
+    it "tests Comp monoid left identity" $ do
+      property $ (compLeftIdentity)
+    it "tests Comp monoid right identity" $ do
+      property $ (compRightIdentity)
+
+  describe "Mem semigroup" $ do
+    it "tests Mem semigroup assosiativity" $ do
+      property $ (memAssoc)
+
+  describe "Mem monoid" $ do
+    it "tests Mem monoid left identity" $ do
+      property $ (memLeftIdentity)
+    it "tests Mem monoid right identity" $ do
+      property $ (memRightIdentity)
+
 twice f = f . f
 fourTimes = twice . twice
 

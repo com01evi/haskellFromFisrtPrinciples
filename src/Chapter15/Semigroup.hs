@@ -31,6 +31,7 @@ data NonEmpty a = NonEmpty a | a :| NonEmpty a deriving (Eq, Ord, Show)
 semigroupAssoc :: (Eq m, Semigroup m) => m -> m -> m -> Bool
 semigroupAssoc a b c = a <> (b <> c) == (a <> b) <> c
 
+
 data Trivial = Trivial deriving (Eq, Show)
 
 instance Semigroup Trivial where
@@ -115,6 +116,7 @@ instance (Arbitrary a, Arbitrary b) => Arbitrary (Or a b) where
 
 type OrAssoc = Or Int String -> Or Int String -> Or Int String -> Bool
 
+
 newtype Combine a b = Combine {unCombine :: a -> b}
 
 instance Show (Combine a b) where
@@ -131,6 +133,7 @@ instance (CoArbitrary a, Arbitrary b) => Arbitrary (Combine a b) where
 combineAssoc :: Combine Int (Sum Int) -> Combine Int (Sum Int) -> Combine Int (Sum Int) -> Int -> Bool
 combineAssoc (Combine f) (Combine g) (Combine h) x = unCombine (((Combine f) <> (Combine g)) <> (Combine h)) x == unCombine ((Combine f) <> ((Combine g) <> (Combine h))) x
 
+
 newtype Comp a = Comp { unComp :: (a -> a)}
 
 instance Show (Comp a) where
@@ -146,6 +149,7 @@ instance (CoArbitrary a, Arbitrary a) => Arbitrary (Comp a) where
 
 compAssoc :: Comp (Sum Int) -> Comp (Sum Int) -> Comp (Sum Int) -> Sum Int -> Bool
 compAssoc f g h x = unComp ((f <> g) <> h) x == unComp (f <> (g <> h)) x
+
 
 data MyValidate a b = MyFailure a | MySuccess b deriving(Eq, Show)
 

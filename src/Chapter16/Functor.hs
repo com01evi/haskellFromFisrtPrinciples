@@ -1,3 +1,5 @@
+{-# LANGUAGE FlexibleInstances #-}
+
 module Chapter16.Functor
     (
      f
@@ -9,7 +11,17 @@ module Chapter16.Functor
     ,c
     ,d
     ,e
+    ,functorIdentity
+    ,functorCompose'
+    ,functorCompose
+    ,Identity(Identity)
+    ,Pair(Pair)
+    ,Two(Two)
+    ,Three(Three)
+    ,Three'(Three')
     ) where
+
+import Test.QuickCheck
 
 f = let either = Right "Hey" in head <$> either
 
@@ -96,5 +108,91 @@ d = ((return '1' ++) . show) . (\x -> [x, 1..3])
 --5
 e :: IO Integer
 e = let ioi = readIO "1" :: IO Integer
-        changed = fmap read $ fmap (("123" ++) . show) ioi
+        changed = (read . ("123" ++) . show) <$> ioi
     in (*3) <$> changed
+
+data Or a b = First a | Second b deriving(Eq, Show)
+
+
+
+instance Functor (Or a) where
+  fmap f (First a) = First a
+  fmap f (Second b) = Second $ f b
+
+
+functorIdentity :: (Functor f, Eq (f a)) => f a -> Bool
+functorIdentity f = fmap id f == id f
+
+functorCompose :: (Functor f, Eq (f c)) => (a -> b) -> (b -> c) -> f a -> Bool
+functorCompose f g x = fmap (g . f) x == (fmap g . fmap f) x
+
+functorCompose' :: [Int] -> Bool
+functorCompose' = functorCompose (1+) (2*)
+
+instance Show (Int -> Int) where
+  show _ = "function show instance"
+
+
+--Exercises: Instances of Functor
+
+--1.
+newtype Identity a = Identity a deriving(Eq, Show)
+
+instance Functor Identity where
+  fmap f (Identity a) = Identity $ f a
+
+instance (Arbitrary a) => Arbitrary (Identity a) where
+  arbitrary = do
+    a <- arbitrary
+    return $ Identity a
+
+--2.
+data Pair a = Pair a a deriving(Eq, Show)
+
+instance Functor Pair where
+  fmap f (Pair x y) = Pair (f x) (f y)
+
+instance (Arbitrary a) => Arbitrary (Pair a) where
+  arbitrary = do
+    x <- arbitrary
+    y <- arbitrary
+    return $ Pair x y
+
+--3.
+data Two a b = Two a b deriving(Eq, Show)
+
+instance Functor (Two a) where
+  fmap f (Two a b) = Two a (f b)
+
+instance (Arbitrary a, Arbitrary b) => Arbitrary (Two a b) where
+  arbitrary = do
+    x <- arbitrary
+    y <- arbitrary
+    return $ Two x y
+
+--4.
+data Three a b c = Three a b c deriving(Eq, Show)
+
+instance Functor (Three a b) where
+  fmap f (Three x y z) = Three x y (f z)
+
+instance (Arbitrary a, Arbitrary b, Arbitrary c) => Arbitrary (Three a b c) where
+  arbitrary = do
+    x <- arbitrary
+    y <- arbitrary
+    z <- arbitrary
+    return $ Three x y z
+
+--5.
+data Three' a b = Three' a b b deriving(Eq, Show)
+
+instance Functor (Three' a) where
+  fmap f (Three' x y z) = Three' x (f y) (f z)
+
+instance (Arbitrary a, Arbitrary b) => Arbitrary (Three' a b) where
+  arbitrary = do
+    x <- arbitrary
+    y <- arbitrary
+    z <- arbitrary
+    return $ Three' x y z
+

@@ -6,6 +6,8 @@ import Chapter11 (capitalizeWord)
 import Chapter14.Exercise(half, halfIndentity, listOrdered, plusAssociative, multAssociative)
 import Chapter15.Monoid
 import Chapter15.Semigroup
+import Chapter16.Functor
+import qualified Chapter16.Functor as C16F
 import Data.List(sort)
 import Test.QuickCheck
 import Test.Hspec
@@ -207,6 +209,42 @@ main = hspec $ do
       property $ (memLeftIdentity)
     it "tests Mem monoid right identity" $ do
       property $ (memRightIdentity)
+
+  describe "Functor laws" $ do
+    it "tests Functor identity" $ do
+      property $ (functorIdentity :: [Int] -> Bool)
+    it "tests Functor compose equality" $ do
+      property $ (functorCompose :: (Int -> Int) -> (Int -> Int) -> [Int] -> Bool)
+
+  describe "Identity Functor laws" $ do
+    it "tests Identity Functor identity" $ do
+      property $ (functorIdentity :: C16F.Identity Int -> Bool)
+    it "tests Identity Functor compose equality" $ do
+      property $ (functorCompose :: (Int -> Int) -> (Int -> Int) -> C16F.Identity Int -> Bool)
+
+  describe "Pair Functor laws" $ do
+    it "tests Pair Functor identity" $ do
+      property $ (functorIdentity :: C16F.Pair Int -> Bool)
+    it "tests Pair Functor compose equality" $ do
+      property $ (functorCompose :: (Int -> Int) -> (Int -> Int) -> C16F.Pair Int -> Bool)
+
+  describe "Two Functor laws" $ do
+    it "tests Two Functor identity" $ do
+      property $ (functorIdentity :: C16F.Two Int Int -> Bool)
+    it "tests Two Functor compose equality" $ do
+      property $ (functorCompose :: (Int -> Int) -> (Int -> Int) -> C16F.Two Int Int -> Bool)
+
+  describe "Three Functor laws" $ do
+    it "tests Three Functor identity" $ do
+      property $ (functorIdentity :: C16F.Three Int Int Int -> Bool)
+    it "tests Three Functor compose equality" $ do
+      property $ (functorCompose :: (Int -> Int) -> (Int -> Int) -> C16F.Three Int Int Int -> Bool)
+
+  describe "Three' Functor laws" $ do
+    it "tests Three' Functor identity" $ do
+      property $ (functorIdentity :: C16F.Three' Int Int -> Bool)
+    it "tests Three' Functor compose equality" $ do
+      property $ (functorCompose :: (Int -> Int) -> (Int -> Int) -> C16F.Three' Int Int -> Bool)
 
 twice f = f . f
 fourTimes = twice . twice

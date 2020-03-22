@@ -19,6 +19,12 @@ module Chapter16.Functor
     ,Two(Two)
     ,Three(Three)
     ,Three'(Three')
+    ,Four(Four)
+    ,Four'(Four')
+    ,Possibly
+    ,Sum
+    ,Constant
+    ,Wrap(Wrap)
     ) where
 
 import Test.QuickCheck
@@ -111,14 +117,6 @@ e = let ioi = readIO "1" :: IO Integer
         changed = (read . ("123" ++) . show) <$> ioi
     in (*3) <$> changed
 
-data Or a b = First a | Second b deriving(Eq, Show)
-
-
-
-instance Functor (Or a) where
-  fmap f (First a) = First a
-  fmap f (Second b) = Second $ f b
-
 
 functorIdentity :: (Functor f, Eq (f a)) => f a -> Bool
 functorIdentity f = fmap id f == id f
@@ -196,3 +194,78 @@ instance (Arbitrary a, Arbitrary b) => Arbitrary (Three' a b) where
     z <- arbitrary
     return $ Three' x y z
 
+--6.
+data Four a b c d = Four a b c d deriving(Eq, Show)
+
+instance Functor (Four a b c) where
+  fmap f (Four a b c d) = Four a b c (f d)
+
+instance (Arbitrary a, Arbitrary b, Arbitrary c, Arbitrary d) => Arbitrary (Four a b c d) where
+  arbitrary = do
+    a <- arbitrary
+    b <- arbitrary
+    c <- arbitrary
+    d <- arbitrary
+    return $ Four a b c d
+
+--7.
+data Four' a b = Four' a a a b deriving(Eq, Show)
+
+instance Functor (Four' a) where
+  fmap f (Four' a b c d) = Four' a b c (f d)
+
+instance (Arbitrary a, Arbitrary b) => Arbitrary (Four' a b) where
+  arbitrary = do
+    a <- arbitrary
+    b <- arbitrary 
+    c <- arbitrary
+    d <- arbitrary
+    return $ Four' a b c d
+    
+liftedInc :: (Functor f, Num a) => f a -> f a
+liftedInc = fmap (1+)
+
+liftedShow :: (Functor f, Show a) => f a -> f String
+liftedShow = fmap show
+
+data Possibly a = LolNope | Yeppers a deriving(Eq, Show)
+
+instance Functor Possibly where
+  fmap f LolNope = LolNope
+  fmap f (Yeppers x) = Yeppers $ f x
+
+instance (Arbitrary a) => Arbitrary (Possibly a) where
+  arbitrary = do 
+    a <- arbitrary
+    frequency [(1,return LolNope)
+              ,(3,return $ Yeppers a)
+              ]
+
+data Sum a b = First a | Second b deriving(Eq, Show)
+
+instance Functor (Sum a) where
+  fmap f (First a) = First a
+  fmap f (Second b) = Second $ f b
+
+instance (Arbitrary a, Arbitrary b) => Arbitrary (Sum a b) where
+  arbitrary = do
+    a <- arbitrary
+    b <- arbitrary
+    frequency [(1,return $ First a)
+              ,(3,return $ Second b)
+              ]
+
+data Constant a b = Constant a deriving(Eq,Show)
+
+instance Functor (Constant a) where
+  fmap _ (Constant x) = Constant x
+
+instance (Arbitrary a) => Arbitrary (Constant a b) where
+  arbitrary = do
+    x <- arbitrary
+    return $ Constant x
+
+data Wrap f a = Wrap (f a) deriving(Eq, Show)
+
+instance (Functor f) => Functor (Wrap f) where
+  fmap f (Wrap fa) = Wrap $ fmap f fa

@@ -246,6 +246,36 @@ main = hspec $ do
     it "tests Three' Functor compose equality" $ do
       property $ (functorCompose :: (Int -> Int) -> (Int -> Int) -> C16F.Three' Int Int -> Bool)
 
+  describe "Four Functor laws" $ do
+    it "tests Four Functor identity" $ do
+      property $ (functorIdentity :: C16F.Four Int Int Int Int -> Bool)
+    it "tests Four Functor compose equality" $ do
+      property $ (functorCompose :: (Int -> Int) -> (Int -> Int) -> C16F.Four Int Int Int Int -> Bool)
+
+  describe "Four' Functor laws" $ do
+    it "tests Four' Functor identity" $ do
+      property $ (functorIdentity :: C16F.Four' Int Int -> Bool)
+    it "tests Four Functor compose equality" $ do
+      property $ (functorCompose :: (Int -> Int) -> (Int -> Int) -> C16F.Four' Int Int -> Bool)
+
+  describe "Possibly Functor laws" $ do
+    it "tests Possibly Functor identity" $ do
+      property $ (functorIdentity :: C16F.Possibly Int -> Bool)
+    it "tests Possibly Functor compose equality" $ do
+      property $ (functorCompose :: (Int -> Int) -> (Int -> Int) -> C16F.Possibly Int -> Bool)
+
+  describe "Sum Functor laws" $ do
+    it "tests Sum Functor identity" $ do
+      property $ (functorIdentity :: C16F.Sum String Int -> Bool)
+    it "tests Sum Functor compose equality" $ do
+      property $ (functorCompose :: (Int -> Int) -> (Int -> Int) -> C16F.Sum String Int -> Bool)
+
+  describe "Constant Functor laws" $ do
+    it "tests Constant Functor identity" $ do
+      property $ (functorIdentity :: C16F.Constant String Int -> Bool)
+    it "tests Constant Functor compose equality" $ do
+      property $ (functorCompose :: (Int -> Int) -> (Int -> Int) -> C16F.Constant String Int -> Bool)
+
 twice f = f . f
 fourTimes = twice . twice
 

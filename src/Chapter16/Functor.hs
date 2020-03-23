@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE FlexibleInstances, RankNTypes #-}
 
 module Chapter16.Functor
     (
@@ -25,13 +25,17 @@ module Chapter16.Functor
     ,Sum
     ,Constant
     ,Wrap(Wrap)
+    ,getInt
+    ,functorMain
+    ,WhoCares(ItDoesnt)
     ) where
 
 import Test.QuickCheck
+import Data.Char
 
 f = let either = Right "Hey" in head <$> either
 
-data WhoCares a = ItDoesnt | Matter a | WhatThisIsCalled deriving(Eq, Show)
+data WhoCares a = ItDoesnt | Matter a | WhatThisIsCalled deriving(Eq, Show, Read)
 
 instance Functor WhoCares where
   fmap _ ItDoesnt = ItDoesnt
@@ -269,3 +273,19 @@ data Wrap f a = Wrap (f a) deriving(Eq, Show)
 
 instance (Functor f) => Functor (Wrap f) where
   fmap f (Wrap fa) = Wrap $ fmap f fa
+
+getInt :: IO Int
+getInt = read <$> getLine
+
+functorMain :: IO ()
+functorMain = do
+  a <- getLine
+  case all isNumber a of
+    True -> print $ (read a) +1
+    False -> error "Input was not number"
+
+type Nat f g = forall a . f a -> g a
+
+maybeToList :: Nat Maybe []
+maybeToList Nothing = []
+maybeToList (Just a) = [a]

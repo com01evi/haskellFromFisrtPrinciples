@@ -28,10 +28,14 @@ module Chapter16.Functor
     ,getInt
     ,functorMain
     ,WhoCares(ItDoesnt)
+    ,Mu(InF, outF)
+    ,D(D)
+    ,More(L,R)
     ) where
 
 import Test.QuickCheck
 import Data.Char
+import GHC.Arr
 
 f = let either = Right "Hey" in head <$> either
 
@@ -289,3 +293,105 @@ type Nat f g = forall a . f a -> g a
 maybeToList :: Nat Maybe []
 maybeToList Nothing = []
 maybeToList (Just a) = [a]
+
+--Chapter exercises
+
+--4.
+newtype Mu f = InF { outF :: f (Mu f)}
+
+--5.
+data D = D (Array Word Word) Int Int
+
+--1.
+data Sum2 b a = First2 a | Second2 b
+
+instance Functor (Sum2 b) where
+  fmap f (First2 a) = First2 $ f a
+  fmap f (Second2 b) = Second2 b
+
+--2.
+data Company a c b = DeepBlue a c | Something b
+
+instance Functor (Company a c) where
+  fmap f (Something b) = Something $ f b
+  fmap _ (DeepBlue a c) = DeepBlue a c
+
+--3.
+data More b a = L a b a | R b a b deriving(Eq, Show)
+
+instance Functor (More b) where
+  fmap f (L a b a') = L (f a) b (f a')
+  fmap f (R b a b') = R b (f a) b'
+
+--1.
+data Quant a b = Finance | Desk a | Bloor b
+
+instance Functor (Quant a) where
+  fmap f Finance = Finance
+  fmap f (Desk a) = Desk a
+  fmap f (Bloor b) = Bloor $ f b
+
+--2.
+data K a b = K a
+
+instance Functor (K a) where
+  fmap f (K a) = K a
+
+--3.
+newtype Flip f a b = Flip (f b a) deriving(Eq, Show)
+
+instance Functor (Flip K a) where
+  fmap f (Flip (K a)) = Flip (K (f a))
+
+--4.
+data EvilGoateeConst a b = GoatyConst b
+
+instance Functor (EvilGoateeConst a) where
+  fmap f (GoatyConst b) = GoatyConst $ f b
+
+--5.
+data LiftItOut f a = LiftItOut (f a)
+
+instance Functor g => Functor (LiftItOut g) where
+  fmap f (LiftItOut ga) = LiftItOut (fmap f ga)
+
+--6.
+data Parappa f g a = DaWrappa (f a) (g a)
+
+instance (Functor f, Functor g) => Functor (Parappa f g) where
+  fmap h (DaWrappa fa ga) = DaWrappa (fmap h fa) (fmap h ga)
+
+--7.
+data Ignoreone f g a b = IgnringSomething (f a) (g b)
+
+instance (Functor g) => Functor (Ignoreone f g a) where
+  fmap h (IgnringSomething fa gb) = IgnringSomething fa (fmap h gb)
+
+--8.
+data Notorious g o a t = Notorious (g o) (g a) (g t)
+
+instance Functor g => Functor (Notorious g o a) where
+  fmap f (Notorious go ga gt) = Notorious go ga (fmap f gt)
+
+--9.
+data List a = Nil | Cons a (List a)
+
+instance Functor List where
+  fmap _ Nil = Nil
+  fmap f (Cons x list) = Cons (f x) (fmap f list)
+
+--10.
+data GoatLord a = NoGoat | OneGoat a | MoreGoats (GoatLord a) (GoatLord a) (GoatLord a)
+
+instance Functor GoatLord where
+  fmap _ NoGoat = NoGoat
+  fmap f (OneGoat a) = OneGoat $ f a
+  fmap f (MoreGoats goatA goatB goatC) = MoreGoats (fmap f goatA) (fmap f goatB) (fmap f goatC)
+
+--11.
+data TalkToMe a = Halt | Print String a | Read (String -> a)
+
+instance Functor TalkToMe where
+  fmap _ Halt = Halt
+  fmap f (Print str x) = Print str (f x)
+  fmap f (Read sg) = Read $ fmap f sg

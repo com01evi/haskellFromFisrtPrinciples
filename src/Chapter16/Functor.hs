@@ -31,6 +31,7 @@ module Chapter16.Functor
     ,Mu(InF, outF)
     ,D(D)
     ,More(L,R)
+    ,TalkToMe
     ) where
 
 import Test.QuickCheck

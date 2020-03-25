@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 6ae4325c99586d6cb7044c777d93ddd495fe91949709c0092e68218acc813114
+-- hash: 07b1ed7e0d068fe0f0a876e2101cb120e7fbd53329c542f1a386a32d3718a980
 
 name:           haskellFromFisrtPrinciples
 version:        0.1.0.0
@@ -39,6 +39,7 @@ library
       Chapter15.Monoid
       Chapter15.Semigroup
       Chapter16.Functor
+      Chapter17.Applicative
       Chapter2
       Chapter3
       Chapter4

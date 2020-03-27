@@ -109,3 +109,12 @@ y4 = lookup 2 $ zip [1,2,3] [4,5,6]
 
 summed :: Maybe Integer
 summed = sum <$> ((,) <$> x4 <*> y4)
+
+newtype Identity a = Identity a deriving(Eq, Ord, Show)
+
+instance Functor Identity where
+  fmap f (Identity x) = Identity $ f x
+
+instance Applicative Identity where
+  pure = Identity
+  (Identity f) <*> (Identity x) = Identity $ f x

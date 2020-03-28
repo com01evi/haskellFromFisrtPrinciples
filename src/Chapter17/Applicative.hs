@@ -118,3 +118,41 @@ instance Functor Identity where
 instance Applicative Identity where
   pure = Identity
   (Identity f) <*> (Identity x) = Identity $ f x
+
+newtype Const a b = Const {getConst :: a} deriving(Eq, Ord, Show)
+
+instance Functor (Const a) where
+  fmap f (Const x) = Const x
+
+instance Monoid a => Applicative (Const a) where
+  pure x = Const mempty
+  Const m1 <*> Const m2 = Const $ m1 <> m2
+
+newtype Name2 = Name2 String
+
+newtype Address = Address String
+
+data Person4 = Person4 Name2 Address
+
+validateLength :: Int -> String -> Maybe String
+validateLength n s = if length s > n
+                     then Nothing
+                     else Just s
+
+mkName :: String -> Maybe Name2
+mkName = fmap Name2 . validateLength 10
+
+mkAddress :: String -> Maybe Address
+mkAddress = fmap Address . validateLength 25
+
+mkPerson4 :: String -> String -> Maybe Person4
+mkPerson4 s1 s2 = Person4 <$> mkName s1 <*> mkAddress s2
+
+--Exercises: Fixer Upper
+--1.
+fixUpper1 :: Maybe String
+fixUpper1 = const <$> Just "Hello" <*> Just "World"
+
+--2.
+fixUpper2 :: Maybe (Int,Int,String,[Int])
+fixUpper2 = (,,,) <$> Just 90 <*> Just 10 <*> Just "Tierness" <*> Just [1,2,3]

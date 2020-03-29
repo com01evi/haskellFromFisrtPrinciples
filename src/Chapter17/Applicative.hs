@@ -6,6 +6,7 @@ module Chapter17.Applicative
     ,lookup1
     ,addMaybe1
     ,addMaybe2
+    ,Identity(Identity)
     ) where
 
 import qualified Data.Map as M

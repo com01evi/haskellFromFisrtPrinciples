@@ -3,6 +3,7 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 module Chapter17.Apl1 (
+  zipListMain
 )where
 
 import Control.Applicative
@@ -15,8 +16,13 @@ instance Semigroup a => Semigroup (ZipList a) where
  (ZipList xs) <> (ZipList ys) = liftA2 (<>) (ZipList xs) (ZipList ys)
 
 instance Monoid a => Monoid (ZipList a) where
-  mempty = ZipList []
+  mempty = pure mempty
   mappend = liftA2 mappend
 
 instance Eq a => EqProp (ZipList a) where
   (=-=) = eq
+
+zl = ZipList [1 :: Sum Int]
+
+zipListMain :: IO ()
+zipListMain = quickBatch $ monoid zl

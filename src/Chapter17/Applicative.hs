@@ -7,10 +7,16 @@ module Chapter17.Applicative
     ,addMaybe1
     ,addMaybe2
     ,Identity(Identity)
+    ,ListA(NilA,ConsA)
+    ,listMain
     ) where
 
 import qualified Data.Map as M
 import Data.List (elemIndex)
+import Test.QuickCheck
+import Test.QuickCheck.Gen
+import Test.QuickCheck.Checkers
+import Test.QuickCheck.Classes
 
 data MyValidate a b = Error a | Safe b deriving(Eq, Show)
 
@@ -157,3 +163,60 @@ fixUpper1 = const <$> Just "Hello" <*> Just "World"
 --2.
 fixUpper2 :: Maybe (Int,Int,String,[Int])
 fixUpper2 = (,,,) <$> Just 90 <*> Just 10 <*> Just "Tierness" <*> Just [1,2,3]
+
+
+--List Applicative Exercise
+
+data ListA a = NilA | ConsA a (ListA a) deriving(Eq, Show)
+
+instance Functor ListA where
+  fmap f NilA = NilA
+  fmap f (ConsA x list) = ConsA (f x) (fmap f list)
+
+instance Applicative ListA where
+  pure x = ConsA x NilA
+  NilA <*> _ = NilA
+  _ <*> NilA = NilA
+  (ConsA f fx) <*> xs = fmap f xs @@ (fx <*> xs)
+
+(@@) :: (ListA a) -> (ListA a) -> (ListA a)
+NilA @@ list = list
+list @@ NilA = list
+(ConsA x xs) @@ (ConsA y ys) = ConsA x (xs @@ (ConsA y ys))
+
+replicateList :: (Applicative m) => Int -> m a -> m (ListA a)
+replicateList cnt0 f = loop cnt0
+  where loop cnt
+          | cnt <= 0 = pure NilA
+          | otherwise = ConsA <$> f <*> loop (cnt - 1)
+
+liftListArbitrary :: Gen a -> Gen (ListA a)
+liftListArbitrary gen = sized $ \n ->
+  do k <- choose (0,n)
+     replicateList k gen
+
+instance (Arbitrary a) => Arbitrary (ListA a) where
+  arbitrary = liftListArbitrary arbitrary
+
+instance (Eq a) => EqProp (ListA a) where
+  (=-=) = eq
+
+listMain :: IO ()
+listMain = do
+  let trigger :: ListA (Int, Char, String)
+      trigger = undefined
+  quickBatch $ applicative trigger
+
+append :: ListA a -> ListA a -> ListA a
+append NilA ys = ys
+append (ConsA x xs) ys = ConsA x (append xs ys)
+
+fold :: (a -> b -> b) -> b -> ListA a -> b
+fold _ b NilA = b
+fold f b (ConsA x xs) = f x (fold f b xs)
+
+concatList :: ListA (ListA a) -> ListA a
+concatList = fold append NilA
+
+flatMap :: (a -> ListA b) -> ListA a -> ListA b
+flatMap f list = concatList $ fmap f list

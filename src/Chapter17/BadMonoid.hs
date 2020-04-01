@@ -1,7 +1,6 @@
 module Chapter17.BadMonoid (
   bmmain
  ,bmmain2
- ,bmmain3
 )where
 
 import Data.Monoid
@@ -47,19 +46,4 @@ bmmain2 = do
   let trigger = Identity ((1 :: Int), '2', "WWW")
   quickBatch $ applicative trigger
 
-instance (Arbitrary a, Arbitrary b) => Arbitrary (MyValidate a b) where
-  arbitrary = do
-    a <- arbitrary 
-    b <- arbitrary
-    frequency [ (1, return $ Error a)
-              , (3, return $ Safe b)
-              ]
 
-instance (Eq a, Eq b) => EqProp (MyValidate a b) where
-  (=-=) = eq
-
-bmmain3 :: IO ()
-bmmain3 = do
-  let trigger :: MyValidate String (Int, Char, String)
-      trigger = undefined
-  quickBatch $ applicative trigger

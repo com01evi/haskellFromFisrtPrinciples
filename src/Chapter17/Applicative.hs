@@ -9,6 +9,14 @@ module Chapter17.Applicative
     ,Identity(Identity)
     ,ListA(NilA,ConsA)
     ,listMain
+    ,flatMap
+    ,mySortWith
+    ,take'
+    ,fold'
+    ,ZipList'(ZipList')
+    ,zipListMain2
+    ,validateMain2
+    ,pairMain
     ) where
 
 import qualified Data.Map as M
@@ -30,6 +38,23 @@ instance Monoid a => Applicative (MyValidate a) where
   (Safe f) <*> (Safe x) = Safe $ f x
   (Error x) <*> (Safe y) = Error x
   (Error x) <*> (Error y) = Error $ x <> y
+
+instance (Arbitrary a, Arbitrary b) => Arbitrary (MyValidate a b) where
+  arbitrary = do
+    a <- arbitrary
+    b <- arbitrary
+    frequency [(1, return $ Error a)
+              ,(3, return $ Safe b)
+              ]
+
+instance (Eq a,Eq b) => EqProp (MyValidate a b) where
+  (=-=) = eq
+
+validateMain2 :: IO ()
+validateMain2 = do
+  let trigger :: MyValidate String (Int, Char, String)
+      trigger = undefined
+  quickBatch $ applicative trigger
 
 type Name = String
 type Age = Int
@@ -185,18 +210,18 @@ list @@ NilA = list
 (ConsA x xs) @@ (ConsA y ys) = ConsA x (xs @@ (ConsA y ys))
 
 replicateList :: (Applicative m) => Int -> m a -> m (ListA a)
-replicateList cnt0 f = loop cnt0
+replicateList cnt0 gen = loop cnt0
   where loop cnt
           | cnt <= 0 = pure NilA
-          | otherwise = ConsA <$> f <*> loop (cnt - 1)
+          | otherwise = ConsA <$> gen <*> loop (cnt - 1)
 
-liftListArbitrary :: Gen a -> Gen (ListA a)
-liftListArbitrary gen = sized $ \n ->
-  do k <- choose (0,n)
-     replicateList k gen
+instance Arbitrary1 ListA where
+  liftArbitrary gen = sized $ \n ->
+    do k <- choose (0,n)
+       replicateList k gen
 
 instance (Arbitrary a) => Arbitrary (ListA a) where
-  arbitrary = liftListArbitrary arbitrary
+  arbitrary = liftArbitrary arbitrary
 
 instance (Eq a) => EqProp (ListA a) where
   (=-=) = eq
@@ -207,16 +232,88 @@ listMain = do
       trigger = undefined
   quickBatch $ applicative trigger
 
+take' :: Int -> ListA a -> ListA a
+take' 0 _ = NilA
+take' _ NilA = NilA
+take' n (ConsA x list) = ConsA x (take' (n-1) list)
+
 append :: ListA a -> ListA a -> ListA a
 append NilA ys = ys
 append (ConsA x xs) ys = ConsA x (append xs ys)
 
-fold :: (a -> b -> b) -> b -> ListA a -> b
-fold _ b NilA = b
-fold f b (ConsA x xs) = f x (fold f b xs)
+fold' :: (a -> b -> b) -> b -> ListA a -> b
+fold' _ b NilA = b
+fold' f b (ConsA x xs) = f x (fold' f b xs)
 
 concatList :: ListA (ListA a) -> ListA a
-concatList = fold append NilA
+concatList = fold' append NilA
 
 flatMap :: (a -> ListA b) -> ListA a -> ListA b
 flatMap f list = concatList $ fmap f list
+
+mySortWith :: (Ord b) => (a -> b) -> [a] -> [a]
+mySortWith f = fmap fst . qsortBySnd . fmap ((,) <$> id <*> f)
+   
+qsortBySnd :: Ord b => [(a,b)] -> [(a,b)]
+qsortBySnd [] = []
+qsortBySnd (x:xs) = (qsortBySnd smaller) ++ [x] ++ (qsortBySnd bigger)
+  where
+    smaller = filter (\n -> snd n <= snd x) xs
+    bigger = filter (\n -> snd n > snd x) xs
+
+newtype ZipList' a = ZipList' (ListA a) deriving(Eq, Show)
+
+instance Eq a => EqProp (ZipList' a) where
+  xs =-= ys = xs' `eq` ys'
+    where xs' = let (ZipList' l) = xs
+                in take' 3000 l
+          ys' = let (ZipList' l) = ys
+                in take' 3000 l
+
+instance Functor ZipList' where
+  fmap f (ZipList' xs) = ZipList' $ fmap f xs
+
+instance Applicative ZipList' where
+  pure x = ZipList' $ foldr ConsA NilA $ repeat x
+  ZipList' NilA <*> _ = ZipList' NilA
+  _ <*> ZipList' NilA = ZipList' NilA 
+  ZipList' fx <*> ZipList' xs = ZipList' $ go fx xs
+    where go NilA _ = NilA
+          go _ NilA = NilA
+          go (ConsA f fx) (ConsA x xs) = ConsA (f x) (go fx xs)
+
+instance Arbitrary1 ZipList' where
+  liftArbitrary = fmap ZipList' . liftArbitrary
+
+instance Arbitrary a => Arbitrary (ZipList' a) where
+  arbitrary = liftArbitrary arbitrary
+
+zipListMain2 :: IO ()
+zipListMain2 = do
+  let trigger :: ZipList' (Int, Char, String)
+      trigger = undefined
+  quickBatch $ applicative trigger
+
+data Pair a = Pair a a deriving(Show, Eq)
+
+instance Functor Pair where
+  fmap f (Pair x y) = Pair (f x) (f y)
+
+instance Applicative Pair where
+  pure x = Pair x x
+  (Pair f g) <*> (Pair x y) = Pair (f x) (g y)
+
+instance Eq a => EqProp (Pair a) where
+  (=-=) = eq
+  
+instance Arbitrary a => Arbitrary (Pair a) where
+  arbitrary = do
+    x <- arbitrary
+    y <- arbitrary
+    return $ Pair x y
+
+pairMain :: IO ()
+pairMain = do
+  let trigger :: Pair (Int, Char, String)
+      trigger = undefined
+  quickBatch $ applicative trigger

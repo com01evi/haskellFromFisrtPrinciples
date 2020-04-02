@@ -8,6 +8,7 @@ import Test.QuickCheck
 import Test.QuickCheck.Checkers
 import Test.QuickCheck.Classes
 import Chapter17.Applicative
+import Chapter16.Functor
 
 data Bull = Fools | Twoo deriving(Eq, Show)
 
@@ -32,11 +33,6 @@ instance EqProp Bull where
 
 bmmain :: IO ()
 bmmain = quickBatch (monoid Twoo)
-
-instance Arbitrary a => Arbitrary (Identity a) where
-  arbitrary = do
-    a <- arbitrary
-    return $ Identity a
 
 instance (Eq a) => EqProp (Identity a) where
   (=-=) = eq

@@ -6,7 +6,6 @@ module Chapter17.Applicative
     ,lookup1
     ,addMaybe1
     ,addMaybe2
-    ,Identity(Identity)
     ,ListA(NilA,ConsA)
     ,listMain
     ,flatMap
@@ -17,6 +16,14 @@ module Chapter17.Applicative
     ,zipListMain2
     ,validateMain2
     ,pairMain
+    ,twoMain
+    ,threeMain
+    ,three'Main
+    ,fourMain
+    ,four'Main
+    ,combos
+    ,stops
+    ,vowels
     ) where
 
 import qualified Data.Map as M
@@ -25,6 +32,8 @@ import Test.QuickCheck
 import Test.QuickCheck.Gen
 import Test.QuickCheck.Checkers
 import Test.QuickCheck.Classes
+import Chapter16.Functor
+import Control.Applicative(liftA3)
 
 data MyValidate a b = Error a | Safe b deriving(Eq, Show)
 
@@ -141,11 +150,6 @@ y4 = lookup 2 $ zip [1,2,3] [4,5,6]
 
 summed :: Maybe Integer
 summed = sum <$> ((,) <$> x4 <*> y4)
-
-newtype Identity a = Identity a deriving(Eq, Ord, Show)
-
-instance Functor Identity where
-  fmap f (Identity x) = Identity $ f x
 
 instance Applicative Identity where
   pure = Identity
@@ -294,11 +298,7 @@ zipListMain2 = do
       trigger = undefined
   quickBatch $ applicative trigger
 
-data Pair a = Pair a a deriving(Show, Eq)
-
-instance Functor Pair where
-  fmap f (Pair x y) = Pair (f x) (f y)
-
+--1.
 instance Applicative Pair where
   pure x = Pair x x
   (Pair f g) <*> (Pair x y) = Pair (f x) (g y)
@@ -306,14 +306,87 @@ instance Applicative Pair where
 instance Eq a => EqProp (Pair a) where
   (=-=) = eq
   
-instance Arbitrary a => Arbitrary (Pair a) where
-  arbitrary = do
-    x <- arbitrary
-    y <- arbitrary
-    return $ Pair x y
-
 pairMain :: IO ()
 pairMain = do
   let trigger :: Pair (Int, Char, String)
       trigger = undefined
   quickBatch $ applicative trigger
+
+--2.
+instance Monoid a => Applicative (Two a) where
+  pure x = Two mempty x
+  (Two a f) <*> (Two b x) = Two (a<>b) (f x)
+
+instance (Eq a, Eq b) => EqProp (Two a b) where
+   (=-=) = eq 
+
+twoMain :: IO ()
+twoMain = do
+  let trigger :: Two String (Int, Char, String)
+      trigger = undefined
+  quickBatch $ applicative trigger
+
+--3.
+instance (Monoid a, Monoid b) => Applicative (Three a b) where
+  pure x = Three mempty mempty x
+  (Three a p f) <*> (Three b q x) = Three (a<>b) (p<>q) (f x)
+
+instance (Eq a, Eq b, Eq c) => EqProp (Three a b c) where
+   (=-=) = eq 
+
+threeMain :: IO ()
+threeMain = do
+  let trigger :: Three String String (Int, Char, String)
+      trigger = undefined
+  quickBatch $ applicative trigger
+
+--4.
+instance Monoid a => Applicative (Three' a) where
+  pure x = Three' mempty x x
+  (Three' a f g) <*> (Three' b x y) = Three' (a<>b) (f x) (g y)
+
+instance (Eq a, Eq b) => EqProp (Three' a b) where
+   (=-=) = eq 
+
+three'Main :: IO ()
+three'Main = do
+  let trigger :: Three' String (Int, Char, String)
+      trigger = undefined
+  quickBatch $ applicative trigger
+
+--5.
+instance (Monoid a, Monoid b, Monoid c) => Applicative (Four a b c) where
+  pure x = Four mempty mempty mempty x
+  (Four a1 a2 a3 f) <*> (Four b1 b2 b3 x) = Four (a1<>b1) (a2<>b2) (a3<>b3) (f x)
+
+instance (Eq a, Eq b, Eq c, Eq d) => EqProp (Four a b c d) where
+   (=-=) = eq
+
+fourMain :: IO ()
+fourMain = do
+  let trigger :: Four String String String (Int, Char, String)
+      trigger = undefined
+  quickBatch $ applicative trigger
+
+--5.
+instance (Monoid a) => Applicative (Four' a) where
+  pure x = Four' mempty mempty mempty x
+  (Four' a1 a2 a3 f) <*> (Four' b1 b2 b3 x) = Four' (a1<>b1) (a2<>b2) (a3<>b3) (f x)
+
+instance (Eq a, Eq b) => EqProp (Four' a b) where
+   (=-=) = eq
+
+four'Main :: IO ()
+four'Main = do
+  let trigger :: Four' String (Int, Char, String)
+      trigger = undefined
+  quickBatch $ applicative trigger
+
+stops :: String
+stops = "pbtdkg"
+
+vowels :: String
+vowels = "aeiou"
+
+combos :: [a] -> [b] -> [c] -> [(a,b,c)]
+combos = liftA3 (,,)

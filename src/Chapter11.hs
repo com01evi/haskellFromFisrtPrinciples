@@ -14,7 +14,8 @@ module Chapter11
     makeTree,
     treeMap,
     makeListFromTree,
-    treeFold,
+    treeFoldl,
+    treeFoldr,
     vigenereCipher,
     capitalizeWord,
     capitalizeWords,
@@ -326,9 +327,13 @@ makeListFromTree (Node left x right) = (makeListFromTree left) ++ [x] ++ (makeLi
 mysort :: (Ord a) => [a] -> [a]
 mysort = makeListFromTree . makeTree 
 
-treeFold :: (a -> b -> b) -> b -> BTree a -> b
-treeFold f acc Leaf = acc
-treeFold f acc (Node left x right) = treeFold f (f x (treeFold f acc left)) right
+treeFoldl :: (b -> a -> b) -> b -> BTree a -> b
+treeFoldl f acc Leaf = acc
+treeFoldl f acc (Node left x right) = treeFoldl f (f (treeFoldl f acc left) x) right
+
+treeFoldr :: (a -> b -> b) -> b -> BTree a -> b
+treeFoldr f acc Leaf = acc
+treeFoldr f acc (Node left x right) = treeFoldr f (f x (treeFoldr f acc right)) left
 
 listFoldr :: (a -> b -> b) -> b -> [a] -> b
 listFoldr f acc [] = acc

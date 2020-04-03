@@ -7,6 +7,7 @@ module Chapter17.Applicative
     ,addMaybe1
     ,addMaybe2
     ,ListA(NilA,ConsA)
+    ,concatList
     ,listMain
     ,flatMap
     ,mySortWith

@@ -391,3 +391,9 @@ vowels = "aeiou"
 
 combos :: [a] -> [b] -> [c] -> [(a,b,c)]
 combos = liftA3 (,,)
+
+instance Applicative (Sum a) where
+  pure = Second
+  (First x) <*> _ = First x
+  (Second f) <*> (First x) = First x
+  (Second f) <*> (Second x) = Second $ f x

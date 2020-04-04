@@ -22,7 +22,7 @@ module Chapter16.Functor
     ,Four(Four)
     ,Four'(Four')
     ,Possibly
-    ,Sum
+    ,Sum(First, Second)
     ,Constant
     ,Wrap(Wrap)
     ,getInt

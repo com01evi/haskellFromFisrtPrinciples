@@ -7,6 +7,7 @@ module Chapter18.Monad(
  ,phEitherMain
  ,identityMain
  ,listMonadMain
+ ,fliptype
 )where
 
 import Chapter17.Applicative
@@ -180,7 +181,12 @@ a :: Monad m => m a -> m (a -> b) -> m b
 a x f = x >>= (\x1 -> f >>= (\f1 -> return $ f1 x1))
 
 meh :: Monad m => [a] -> (a -> m b) -> m [b]
+meh [] _ = return []
 meh (x:xs) f = f x >>= (\x1 -> meh xs f >>= \xs1 -> return (x1:xs1))
 
+meh2 :: Monad m => [a] -> (a -> m b) -> m [b]
+meh2 [] _ = return []
+meh2 (x:xs) f = (:) <$> f x <*> meh2 xs f
+
 fliptype :: (Monad m) => [m a] -> m [a]
-fliptype xs = meh xs id
+fliptype xs = meh2 xs id

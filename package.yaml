@@ -25,6 +25,15 @@ dependencies:
 - QuickCheck
 - containers
 - checkers
+- bytestring
+- hedis
+- mtl
+- network-uri
+- random
+- scotty
+- semigroups
+- text
+- transformers
 
 library:
   source-dirs: src

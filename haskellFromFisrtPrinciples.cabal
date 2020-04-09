@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: dfcd46886a8a7c4c9a9b3bfa48c1d539909a2905fe6e7b9cc454314d7510e265
+-- hash: a2c51116530652f7d756cd8fa551498858761a988e955984b23dced1e90604a0
 
 name:           haskellFromFisrtPrinciples
 version:        0.1.0.0
@@ -43,6 +43,7 @@ library
       Chapter17.Applicative
       Chapter17.BadMonoid
       Chapter18.Monad
+      Chapter19.Monad
       Chapter19.Monoid
       Chapter2
       Chapter3
@@ -59,9 +60,18 @@ library
   build-depends:
       QuickCheck
     , base >=4.7 && <5
+    , bytestring
     , checkers
     , containers
+    , hedis
+    , mtl
+    , network-uri
+    , random
+    , scotty
+    , semigroups
+    , text
     , time
+    , transformers
   default-language: Haskell2010
 
 executable haskellFromFisrtPrinciples-exe
@@ -74,10 +84,19 @@ executable haskellFromFisrtPrinciples-exe
   build-depends:
       QuickCheck
     , base >=4.7 && <5
+    , bytestring
     , checkers
     , containers
     , haskellFromFisrtPrinciples
+    , hedis
+    , mtl
+    , network-uri
+    , random
+    , scotty
+    , semigroups
+    , text
     , time
+    , transformers
   default-language: Haskell2010
 
 test-suite haskellFromFisrtPrinciples-test
@@ -91,9 +110,18 @@ test-suite haskellFromFisrtPrinciples-test
   build-depends:
       QuickCheck
     , base >=4.7 && <5
+    , bytestring
     , checkers
     , containers
     , haskellFromFisrtPrinciples
+    , hedis
     , hspec
+    , mtl
+    , network-uri
+    , random
+    , scotty
+    , semigroups
+    , text
     , time
+    , transformers
   default-language: Haskell2010

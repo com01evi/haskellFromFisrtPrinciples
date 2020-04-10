@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a2c51116530652f7d756cd8fa551498858761a988e955984b23dced1e90604a0
+-- hash: e590b06a6edf6f7dbe48fa8a482ebbf8fba756751a3b2fc8c020b244e7f42bb3
 
 name:           haskellFromFisrtPrinciples
 version:        0.1.0.0
@@ -46,6 +46,7 @@ library
       Chapter19.Monad
       Chapter19.Monoid
       Chapter2
+      Chapter20.Foldable
       Chapter3
       Chapter4
       Chapter5

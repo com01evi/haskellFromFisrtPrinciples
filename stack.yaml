@@ -38,6 +38,10 @@ packages:
 # using the same syntax as the packages field.
 # (e.g., acme-missiles-0.3)
 # extra-deps: []
+extra-deps:
+# - acme-missiles-0.3
+- git: git@github.com:com01evi/morse.git
+  commit: 99de3806c5eb881130ab1b5f869c51dde8257aa8
 
 # Override default flag values for local packages and extra-deps
 # flags: {}

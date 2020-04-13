@@ -3,7 +3,21 @@
 # For more information, please see the documentation at:
 #   https://docs.haskellstack.org/en/stable/lock_files
 
-packages: []
+packages:
+- completed:
+    cabal-file:
+      size: 1534
+      sha256: 846fdb3e64dae7432855b20ae86afcf6e51f8573508462930bf3aa7512594c74
+    name: morse
+    version: 0.1.0.0
+    git: git@github.com:com01evi/morse.git
+    pantry-tree:
+      size: 559
+      sha256: 4a3c90b31df48ec104aa9a2922a380e278d93652c1a0a2f637ff70e295a9b2c6
+    commit: 99de3806c5eb881130ab1b5f869c51dde8257aa8
+  original:
+    git: git@github.com:com01evi/morse.git
+    commit: 99de3806c5eb881130ab1b5f869c51dde8257aa8
 snapshots:
 - completed:
     size: 496697

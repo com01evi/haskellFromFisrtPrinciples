@@ -32,7 +32,7 @@ lowercaseEachInterest = fmap ((,) <$> fst <*> fmap toLower . snd)
 
 class (Functor t, Foldable t) => MyTraverse t where
   mytraverse :: (Applicative f) => (a -> f b) -> t a -> f (t b)
-  mytraverse f = mysequenceA . fmap f
+  mytraverse = (mysequenceA .) . fmap
   mysequenceA :: (Applicative f) => t (f a) -> f (t a)
   mysequenceA = mytraverse id
 

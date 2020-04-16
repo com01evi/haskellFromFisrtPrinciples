@@ -5,12 +5,16 @@ module Chapter21.Traversable(
  ,lowercaseEachInterest
  ,mytraverse
  ,mysequenceA
+ ,three
 )where
 
 import Data.Char(toLower)
 import Chapter20.Foldable
 import Chapter11(BTree(Leaf,Node))
 import Morse
+
+mytraverse2 :: (Functor t, Traversable t, Applicative f) => (a -> f b) -> t a -> f (t b)
+mytraverse2 f = sequenceA . fmap f
 
 mygroup :: (Eq a) => [a] -> [[a]]
 mygroup [] = []
@@ -48,5 +52,37 @@ mymapM :: (Monad m) => (a -> m b) -> [a] -> m [b]
 mymapM _ [] = return []
 mymapM f (x:xs) = f x >>= (\y -> mymapM f xs >>= (\ys -> return (y:ys)))
 
-sequence :: (Monad m) => [m a] -> m [a]
-sequence = mymapM id
+mysequence :: (Monad m) => [m a] -> m [a]
+mysequence = mymapM id
+
+three :: Int -> Int -> Int -> Int
+three x y z = z
+
+data Query = Query
+
+data SomeObj = SomeObj
+
+data IoOnlyObj = IoOnlyObj
+
+data Err = Err
+
+decodeFn :: String -> Either Err SomeObj
+decodeFn = undefined
+
+fetchFn :: Query -> IO [String]
+fetchFn = undefined
+
+makeIoOnlyObj :: [SomeObj] -> IO [(SomeObj, IoOnlyObj)]
+makeIoOnlyObj = undefined
+
+pipelineFn :: Query -> IO (Either Err [(SomeObj,IoOnlyObj)])
+pipelineFn query = do
+  a <- fetchFn query
+  case mapM decodeFn a of
+    (Left err) -> return $ Left err
+    (Right res) -> do
+      a <- makeIoOnlyObj res
+      return $ Right a
+
+pipelineFn2 :: Query -> IO (Either Err [(SomeObj,IoOnlyObj)])
+pipelineFn2 = (traverse makeIoOnlyObj . traverse decodeFn =<<) . fetchFn

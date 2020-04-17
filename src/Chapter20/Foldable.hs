@@ -12,7 +12,7 @@ module Chapter20.Foldable(
 )where
 
 import Chapter11(BTree(Leaf,Node))
-import Chapter16.Functor(Identity(Identity))
+import Chapter16.Functor(Identity(Identity), Constant(Constant,getConstant))
 import Data.Monoid
 
 treeFoldr :: (a -> b -> b) -> b -> BTree a -> b
@@ -81,10 +81,8 @@ mynull t = foldMap (\x -> (Sum 1)) t == mempty
 mylength :: (Foldable t) => t a -> Int
 mylength = getSum . foldMap (const (Sum 1))
 
-data Constant a b = Constant b
-
 instance Foldable (Constant a) where
-  foldMap f (Constant x) = f x
+  foldMap f (Constant x) = mempty
 
 data Two a b = Two a b
 

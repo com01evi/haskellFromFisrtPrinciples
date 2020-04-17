@@ -23,7 +23,6 @@ module Chapter16.Functor
     ,Four'(Four')
     ,Possibly
     ,Sum(First, Second)
-    ,Constant
     ,Wrap(Wrap)
     ,getInt
     ,functorMain
@@ -32,6 +31,7 @@ module Chapter16.Functor
     ,D(D)
     ,More(L,R)
     ,TalkToMe
+    ,Constant(Constant,getConstant)
     ) where
 
 import Test.QuickCheck
@@ -264,15 +264,7 @@ instance (Arbitrary a, Arbitrary b) => Arbitrary (Sum a b) where
               ,(3,return $ Second b)
               ]
 
-data Constant a b = Constant a deriving(Eq,Show)
 
-instance Functor (Constant a) where
-  fmap _ (Constant x) = Constant x
-
-instance (Arbitrary a) => Arbitrary (Constant a b) where
-  arbitrary = do
-    x <- arbitrary
-    return $ Constant x
 
 data Wrap f a = Wrap (f a) deriving(Eq, Show)
 
@@ -396,3 +388,13 @@ instance Functor TalkToMe where
   fmap _ Halt = Halt
   fmap f (Print str x) = Print str (f x)
   fmap f (Read sg) = Read $ fmap f sg
+
+newtype Constant a b = Constant { getConstant :: a} deriving(Eq, Show)
+
+instance Functor (Constant a) where
+  fmap _ (Constant x) = Constant x
+
+instance (Arbitrary a) => Arbitrary (Constant a b) where
+  arbitrary = do
+    x <- arbitrary
+    return $ Constant x

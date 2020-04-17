@@ -6,12 +6,23 @@ module Chapter21.Traversable(
  ,mytraverse
  ,mysequenceA
  ,three
+ ,edgeMap
+ ,foldMap'
+ ,identityMain2
+ ,constantMain2
 )where
 
 import Data.Char(toLower)
 import Chapter20.Foldable
 import Chapter11(BTree(Leaf,Node))
+import qualified Chapter16.Functor as F
 import Morse
+import Data.Functor.Identity
+import Control.Applicative
+import Test.QuickCheck
+import Test.QuickCheck.Gen
+import Test.QuickCheck.Checkers
+import Test.QuickCheck.Classes
 
 mytraverse2 :: (Functor t, Traversable t, Applicative f) => (a -> f b) -> t a -> f (t b)
 mytraverse2 f = sequenceA . fmap f
@@ -86,3 +97,33 @@ pipelineFn query = do
 
 pipelineFn2 :: Query -> IO (Either Err [(SomeObj,IoOnlyObj)])
 pipelineFn2 = (traverse makeIoOnlyObj . traverse decodeFn =<<) . fetchFn
+
+edgeMap :: (Traversable f) => (a -> b) -> f a -> f b
+edgeMap f = runIdentity . traverse (Identity . f)
+
+foldMap' :: (Monoid m, Traversable t) => (a -> m) -> t a -> m
+foldMap' f = getConst . traverse (Const . f)
+
+instance (Eq a) => EqProp (F.Identity a) where
+  (=-=) = eq
+
+instance Traversable F.Identity where
+  traverse f (F.Identity x) = F.Identity <$> f x
+
+identityMain2 :: IO ()
+identityMain2 = do
+  let trigger :: F.Identity (Int, Char, String)
+      trigger = undefined
+  quickBatch $ traversable trigger
+
+instance (Eq a) => EqProp (F.Constant a b) where
+  (=-=) = eq
+
+instance Traversable (F.Constant a) where
+  traverse f (F.Constant x) = pure (F.Constant x)
+
+constantMain2 :: IO ()
+constantMain2 = do
+  let trigger :: F.Constant Int (Int, Char, String)
+      trigger = undefined
+  quickBatch $ traversable trigger

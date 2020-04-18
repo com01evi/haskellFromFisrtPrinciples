@@ -32,6 +32,11 @@ module Chapter16.Functor
     ,More(L,R)
     ,TalkToMe
     ,Constant(Constant,getConstant)
+    ,MyMaybe(MyNothing, MyJust)
+    ,Pair2(Pair2)
+    ,Big(Big)
+    ,Bigger(Bigger)
+    ,S(S)
     ) where
 
 import Test.QuickCheck
@@ -398,3 +403,46 @@ instance (Arbitrary a) => Arbitrary (Constant a b) where
   arbitrary = do
     x <- arbitrary
     return $ Constant x
+
+data MyMaybe a = MyNothing | MyJust a deriving(Eq, Show)
+
+instance Functor MyMaybe where
+  fmap _ MyNothing = MyNothing
+  fmap f (MyJust x) = MyJust $ f x
+
+instance (Arbitrary a) => Arbitrary (MyMaybe a) where
+  arbitrary = frequency [ (1, return MyNothing)
+                        , (3, MyJust <$> arbitrary)
+                        ]
+
+data Pair2 a b = Pair2 a b deriving(Eq, Show)
+
+instance Functor (Pair2 a) where
+  fmap f (Pair2 x y) = Pair2 x (f y)
+
+instance (Arbitrary a, Arbitrary b) => Arbitrary (Pair2 a b) where
+  arbitrary = Pair2 <$> arbitrary <*> arbitrary
+
+data Big a b = Big a b b deriving(Eq, Show)
+
+instance Functor (Big a) where
+  fmap f (Big x y z) = Big x (f y) (f z)
+
+instance (Arbitrary a, Arbitrary b) => Arbitrary (Big a b) where
+  arbitrary = Big <$> arbitrary <*> arbitrary <*> arbitrary
+
+data Bigger a b = Bigger a b b b deriving(Eq, Show)
+
+instance Functor (Bigger a) where
+  fmap f (Bigger a b c d) = Bigger a (f b) (f c) (f d)
+
+instance (Arbitrary a, Arbitrary b) => Arbitrary (Bigger a b) where
+  arbitrary = Bigger <$> arbitrary <*> arbitrary <*> arbitrary <*> arbitrary
+
+data S n a = S (n a) a deriving(Eq, Show)
+
+instance (Functor n) => Functor (S n) where
+  fmap f (S fx x) = S (fmap f fx) (f x)
+
+instance (Functor n, Arbitrary (n a), Arbitrary a) => Arbitrary (S n a) where
+  arbitrary = S <$> arbitrary <*> arbitrary

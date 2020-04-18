@@ -12,8 +12,9 @@ module Chapter20.Foldable(
 )where
 
 import Chapter11(BTree(Leaf,Node))
-import Chapter16.Functor(Identity(Identity), Constant(Constant,getConstant))
+import Chapter16.Functor(Identity(Identity), Constant(Constant,getConstant), MyMaybe(MyNothing, MyJust),Three(Three),Pair2(Pair2),Big(Big),Bigger(Bigger),S(S))
 import Data.Monoid
+import Chapter17.Applicative(ListA(NilA,ConsA))
 
 treeFoldr :: (a -> b -> b) -> b -> BTree a -> b
 treeFoldr f acc Leaf = acc
@@ -43,8 +44,6 @@ instance Foldable Identity where
   foldr f acc (Identity x) = f x acc
   foldl f acc (Identity x) = f acc x
   foldMap f (Identity x) = f x
-
-data MyMaybe a = MyNothing | MyJust a
 
 instance Foldable MyMaybe where
   foldr f acc MyNothing = acc
@@ -89,8 +88,6 @@ data Two a b = Two a b
 instance Foldable (Two a) where
   foldMap f (Two _ y) = f y
 
-data Three a b c = Three a b c
- 
 instance Foldable (Three a b) where
   foldMap f (Three _ _ z) = f z
 
@@ -106,3 +103,19 @@ instance Foldable (Four' a) where
 
 filterF :: (Foldable t, Applicative f, Monoid (f a)) => (a -> Bool) -> t a -> f a 
 filterF p = foldMap (\x -> if p x then pure x else mempty)
+
+instance Foldable (ListA) where
+  foldMap _ NilA = mempty
+  foldMap f (ConsA x list) = f x <> foldMap f list
+
+instance Foldable (Pair2 a) where
+  foldMap f (Pair2 x y) = f y
+
+instance Foldable (Big a) where
+  foldMap f (Big x z y) = f z <> f y
+
+instance Foldable (Bigger a) where
+  foldMap f (Bigger a b c d) = f b <> f c <> f d
+
+instance (Foldable n) => Foldable (S n) where
+  foldMap f (S fx x) = foldMap f fx <> f x

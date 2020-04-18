@@ -10,6 +10,14 @@ module Chapter21.Traversable(
  ,foldMap'
  ,identityMain2
  ,constantMain2
+ ,interests
+ ,maybeMain2
+ ,listMain2
+ ,threeMain2
+ ,pairMain2
+ ,bigMain
+ ,biggerMain
+ ,sMain
 )where
 
 import Data.Char(toLower)
@@ -23,9 +31,13 @@ import Test.QuickCheck
 import Test.QuickCheck.Gen
 import Test.QuickCheck.Checkers
 import Test.QuickCheck.Classes
+import Chapter17.Applicative(ListA(NilA,ConsA))
+
 
 mytraverse2 :: (Functor t, Traversable t, Applicative f) => (a -> f b) -> t a -> f (t b)
 mytraverse2 f = sequenceA . fmap f
+
+interests=[(0,"Hadoop"),(0,"Big Data"),(0,"HBase"),(0,"Java"),(0,"Spark"),(0,"Storm"),(0,"Cassandra"),(1,"NoSQL"),(1,"MongoDB"),(1,"Cassandra"),(1,"HBase"),(1,"Postgres"),(2,"Python"),(2,"scikit-learn"),(2,"scipy"),(2,"numpy"),(2,"statsmodels"),(2,"pandas"),(3,"R"),(3,"Python"),(3,"statistics"),(3,"regression"),(3,"probability"),(4,"machine learning"),(4,"regression"),(4,"decision trees"),(4,"libsvm"),(5,"Python"),(5,"R"),(5,"Java"),(5,"C++"),(5,"Haskell"),(5,"programming languages"),(6,"statistics"),(6,"probability"),(6,"mathematics"),(6,"theory"),(7,"machine learning"),(7,"scikit-learn"),(7,"Mahout"),(7,"neural networks"),(8,"neural networks"),(8,"deep learning"),(8,"Big Data"),(8,"artificial intelligence"),(9,"Hadoop"),(9,"Java"),(9,"MapReduce"),(9,"Big Data")]
 
 mygroup :: (Eq a) => [a] -> [[a]]
 mygroup [] = []
@@ -127,3 +139,86 @@ constantMain2 = do
   let trigger :: F.Constant Int (Int, Char, String)
       trigger = undefined
   quickBatch $ traversable trigger
+
+instance (Eq a) => EqProp (F.MyMaybe a) where
+  (=-=) = eq
+
+instance Traversable (F.MyMaybe) where
+  traverse _ MyNothing = pure MyNothing
+  traverse f (MyJust x) = MyJust <$> f x
+
+maybeMain2 :: IO ()
+maybeMain2 = do
+  let trigger :: F.MyMaybe (Int, Char, String)
+      trigger = undefined
+  quickBatch $ traversable trigger
+
+instance Traversable ListA where
+  traverse _ NilA = pure NilA
+  traverse f (ConsA x list) = ConsA <$> f x <*> traverse f list
+
+listMain2 :: IO ()
+listMain2 = do
+  let trigger :: ListA (Int, Char, String)
+      trigger = undefined
+  quickBatch $ traversable trigger
+
+instance Traversable (F.Three a b) where
+  traverse f (F.Three x y z) = F.Three <$> pure x <*> pure y <*> f z
+
+threeMain2 :: IO ()
+threeMain2 = do
+  let trigger :: F.Three Int Int (Int, Char, String)
+      trigger = undefined
+  quickBatch $ traversable trigger
+
+instance (Eq a, Eq b) => EqProp (F.Pair2 a b) where
+  (=-=) = eq
+
+instance Traversable (F.Pair2 a) where
+  traverse f (F.Pair2 x y) = F.Pair2 <$> pure x <*> f y
+
+pairMain2 :: IO ()
+pairMain2 = do
+  let trigger :: F.Pair2 Int (Int, Char, String)
+      trigger = undefined
+  quickBatch $ traversable trigger
+
+instance (Eq a, Eq b) => EqProp (F.Big a b) where
+  (=-=) = eq
+
+instance Traversable (F.Big a) where
+  traverse f (F.Big x y z) = F.Big <$> pure x <*> f y <*> f z
+
+bigMain :: IO ()
+bigMain = do
+  let trigger :: F.Big Int (Int, Char, String)
+      trigger = undefined
+  quickBatch $ traversable trigger
+
+instance (Eq a, Eq b) => EqProp (F.Bigger a b) where
+  (=-=) = eq
+
+instance Traversable (F.Bigger a) where
+  traverse f (F.Bigger a b c d) = F.Bigger <$> pure a <*> f b <*> f c <*> f d
+
+biggerMain :: IO ()
+biggerMain = do
+  let trigger :: F.Bigger Int (Int, Char, String)
+      trigger = undefined
+  quickBatch $ traversable trigger
+
+--instance (Applicative n, Testable ( n Property), EqProp a) => EqProp (F.S n a) where
+--  (F.S x y) =-= (F.S p q) = (property $ (=-=) <$> x <*> p) .&. (y =-= q)
+
+instance (Eq (n a), Eq a) => EqProp (F.S n a) where 
+  (=-=) = eq
+
+instance (Traversable n) => Traversable (F.S n) where
+  traverse f (F.S fx x) = F.S <$> traverse f fx <*> f x
+
+sMain :: IO ()
+sMain = do
+  let trigger :: F.S [] (Int, Char, String)
+      trigger = undefined
+  quickBatch $ traversable trigger 

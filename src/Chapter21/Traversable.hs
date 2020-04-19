@@ -18,6 +18,7 @@ module Chapter21.Traversable(
  ,bigMain
  ,biggerMain
  ,sMain
+ ,treeMain
 )where
 
 import Data.Char(toLower)
@@ -222,3 +223,16 @@ sMain = do
   let trigger :: F.S [] (Int, Char, String)
       trigger = undefined
   quickBatch $ traversable trigger 
+
+instance (Eq a) => EqProp (BTree a) where 
+  (=-=) = eq
+
+instance Traversable BTree where
+  traverse f Leaf = pure Leaf
+  traverse f (Node left x right) = Node <$> traverse f left <*> f x <*> traverse f right
+
+treeMain :: IO ()
+treeMain = do
+  let trigger :: BTree (Int, Char, String)
+      trigger = undefined
+  quickBatch $ traversable trigger

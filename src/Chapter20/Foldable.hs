@@ -9,12 +9,17 @@ module Chapter20.Foldable(
  ,mylength
  ,mynull
  ,filterF
+ ,fizzBuzz
 )where
 
 import Chapter11(BTree(Leaf,Node))
 import Chapter16.Functor(Identity(Identity), Constant(Constant,getConstant), MyMaybe(MyNothing, MyJust),Three(Three),Pair2(Pair2),Big(Big),Bigger(Bigger),S(S))
 import Data.Monoid
 import Chapter17.Applicative(ListA(NilA,ConsA))
+import Test.QuickCheck
+import Test.QuickCheck.Gen
+import Test.QuickCheck.Checkers
+import Test.QuickCheck.Classes
 
 treeFoldr :: (a -> b -> b) -> b -> BTree a -> b
 treeFoldr f acc Leaf = acc
@@ -29,7 +34,42 @@ instance Functor BTree where
   fmap f (Node left x right) = Node (fmap f left) (f x) (fmap f right)
 
 instance Foldable BTree where
-  foldMap f tree = fold $ fmap f tree
+  foldMap = (fold .) . fmap
+
+replicateTree :: Int -> Bool -> Bool -> Gen a -> Gen (BTree a)
+replicateTree cnt0 lb rb gen = loop cnt0 lb rb
+  where loop cnt lb rb
+          | cnt <= 0 = pure Leaf
+          | lb && rb = do l <- arbitrary
+                          r <- arbitrary
+                          Node <$> loop (cnt - 1) l r <*> gen <*> loop (cnt - 1) l r
+          | lb = do l <- arbitrary
+                    r <- arbitrary
+                    Node <$> loop (cnt - 1) l r <*> gen <*> pure Leaf
+          | rb = do l <- arbitrary
+                    r <- arbitrary
+                    Node <$> pure Leaf <*> gen <*> loop (cnt - 1) l r
+          | otherwise = Node <$> pure Leaf <*> gen <*> pure Leaf
+
+fizzBuzz :: [Int] -> [IO ()]
+fizzBuzz (x:xs)
+  | x `mod` 3 == 0 && x `mod` 5 == 0 = print (x, "fizzbuzz") : fizzBuzz xs
+  | x `mod` 3 == 0 = print (x, "fizz") : fizzBuzz xs
+  | x `mod` 5 == 0 = print (x, "buzz") : fizzBuzz xs
+  | otherwise = fizzBuzz xs
+
+instance Arbitrary1 BTree where
+  liftArbitrary gen = do
+       k <- choose (0,15)
+       replicateTree k True True gen 
+
+instance (Arbitrary a) => Arbitrary (BTree a) where
+  arbitrary = liftArbitrary arbitrary
+
+--instance (Arbitrary a) => Arbitrary (BTree a) where
+--  arbitrary = frequency [ (1, return Leaf)
+--                        , (3, Node <$> arbitrary <*> arbitrary <*> arbitrary)
+--                        ]
 
 class MyFoldable (t :: * -> *) where
   myfold :: (Monoid m) => t m -> m

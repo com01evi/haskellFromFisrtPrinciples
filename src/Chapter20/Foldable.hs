@@ -60,8 +60,11 @@ fizzBuzz (x:xs)
 
 instance Arbitrary1 BTree where
   liftArbitrary gen = do
-       k <- choose (0,15)
-       replicateTree k True True gen 
+       n <- getSize
+       if n > 15 then do k <- choose (0,15) 
+                         replicateTree k True True gen
+                 else do k <- choose (0, n)
+                         replicateTree k True True gen 
 
 instance (Arbitrary a) => Arbitrary (BTree a) where
   arbitrary = liftArbitrary arbitrary

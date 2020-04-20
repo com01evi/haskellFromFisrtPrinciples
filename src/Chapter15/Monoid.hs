@@ -201,3 +201,17 @@ memMain = do
   print $ (rmzero :: (String, Int))
   print $ rmleft == runMem f' 0
   print $ rmright == runMem f' 0
+
+newtype MyState s a = MyState {runStae :: (s-> (a, s))}
+
+instance Functor (MyState s) where
+  fmap f (MyState g) = MyState (\s -> (f ((fst . g) s), (snd . g) s))
+
+instance Applicative (MyState s) where
+  pure x = MyState (\s -> (x, s))
+  (MyState f) <*> (MyState x) = MyState (\s -> (((fst . f) s) ((fst . x) s), (snd . x) ((snd . f) s)))
+
+instance Monad (MyState s) where
+  MyState f >>= g = MyState h
+                    where h s = runStae (g a) s'
+                                where (a,s') = f s

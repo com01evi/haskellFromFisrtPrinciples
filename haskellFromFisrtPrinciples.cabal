@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d5ab0f4e15562390720ea8b053c04b4542af228155b937676c26d2420f372daf
+-- hash: 63caa065c8f1bb9c3b840a413a0dcffc37ffffe78009146871af525a046ad841
 
 name:           haskellFromFisrtPrinciples
 version:        0.1.0.0
@@ -49,6 +49,7 @@ library
       Chapter20.Foldable
       Chapter21.Traversable
       Chapter22.Reader
+      Chapter23.State
       Chapter3
       Chapter4
       Chapter5

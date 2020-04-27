@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 63caa065c8f1bb9c3b840a413a0dcffc37ffffe78009146871af525a046ad841
+-- hash: b4f2ff0cf9f737a64b7a87bb1de2912a476706754e4d260622b7136eba01eb7c
 
 name:           haskellFromFisrtPrinciples
 version:        0.1.0.0
@@ -67,6 +67,7 @@ library
     , bytestring
     , checkers
     , containers
+    , dlist
     , hedis
     , morse
     , mtl
@@ -92,6 +93,7 @@ executable haskellFromFisrtPrinciples-exe
     , bytestring
     , checkers
     , containers
+    , dlist
     , haskellFromFisrtPrinciples
     , hedis
     , morse
@@ -119,6 +121,7 @@ test-suite haskellFromFisrtPrinciples-test
     , bytestring
     , checkers
     , containers
+    , dlist
     , haskellFromFisrtPrinciples
     , hedis
     , hspec

@@ -35,6 +35,7 @@ dependencies:
 - text
 - transformers
 - morse
+- dlist
 
 library:
   source-dirs: src

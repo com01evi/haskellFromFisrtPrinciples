@@ -5,11 +5,20 @@ module Chapter23.State(
   nDie,
   rollsTogetTwenty,
   rollsCountLogged,
+  addResult,
+  fizzBuzzList,
+  fizzBuzzMain,
+  get',
+  put',
+  exec,
+  eval',
+  mymodify
 )where
 
 import System.Random
 import Control.Monad(replicateM)
 import Control.Monad.Trans.State
+import qualified Data.DList as DL
 
 newtype MyState s a = MyState {runStae :: s -> (a, s)}
 
@@ -102,3 +111,42 @@ rollsCountLogged n g = go 0 (0, []) g
                              | sum >= n = (count,dielist)
                              | otherwise = let (die, nextGen) = randomR (1, 6) gen
                                            in go (sum + die) ((count + 1, intToDie die: dielist)) nextGen
+
+fizzBuzz :: Integer -> String 
+fizzBuzz n 
+  | n `mod` 15 == 0 = "FizzBuzz"
+  | n `mod` 3 == 0 = "Fizz"
+  | n `mod` 5 == 0 = "Buzz"
+  | otherwise = show n
+
+fizzBuzzList :: [Integer] -> [String]
+fizzBuzzList list = 
+  let dlist = execState (mapM_ addResult list) DL.empty
+  in DL.apply dlist []
+
+addResult :: Integer -> State (DL.DList String) ()
+addResult n = do
+  xs <- get
+  let result = fizzBuzz n
+  put (DL.snoc xs result)
+
+fizzBuzzMain :: IO ()
+fizzBuzzMain = mapM_ putStrLn $ fizzBuzzList [1..100]
+
+fizzBuzzFromTo :: Integer -> Integer -> [String]
+fizzBuzzFromTo from to = fizzBuzzList [from..to]
+
+get' :: State s s
+get' = state (\s -> (s, s))
+
+put' :: s -> State s ()
+put' s = state (\_ -> ((), s))
+
+exec :: State s a -> s -> s
+exec = (snd .) . runState
+
+eval' :: State s a -> s -> a
+eval' = (fst .) . runState
+
+mymodify :: (s -> s) -> State s ()
+mymodify f = state (\s -> ((), f s))

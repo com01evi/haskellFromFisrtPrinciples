@@ -36,6 +36,8 @@ dependencies:
 - transformers
 - morse
 - dlist
+- trifecta
+- parsers
 
 library:
   source-dirs: src

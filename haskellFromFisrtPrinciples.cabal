@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b4f2ff0cf9f737a64b7a87bb1de2912a476706754e4d260622b7136eba01eb7c
+-- hash: 2d645cc8f8d124598ed722e6202710fb7e85b8f042da8319b23fafb45422a61e
 
 name:           haskellFromFisrtPrinciples
 version:        0.1.0.0
@@ -50,6 +50,7 @@ library
       Chapter21.Traversable
       Chapter22.Reader
       Chapter23.State
+      Chapter24.Parser
       Chapter3
       Chapter4
       Chapter5
@@ -72,12 +73,14 @@ library
     , morse
     , mtl
     , network-uri
+    , parsers
     , random
     , scotty
     , semigroups
     , text
     , time
     , transformers
+    , trifecta
   default-language: Haskell2010
 
 executable haskellFromFisrtPrinciples-exe
@@ -99,12 +102,14 @@ executable haskellFromFisrtPrinciples-exe
     , morse
     , mtl
     , network-uri
+    , parsers
     , random
     , scotty
     , semigroups
     , text
     , time
     , transformers
+    , trifecta
   default-language: Haskell2010
 
 test-suite haskellFromFisrtPrinciples-test
@@ -128,10 +133,12 @@ test-suite haskellFromFisrtPrinciples-test
     , morse
     , mtl
     , network-uri
+    , parsers
     , random
     , scotty
     , semigroups
     , text
     , time
     , transformers
+    , trifecta
   default-language: Haskell2010

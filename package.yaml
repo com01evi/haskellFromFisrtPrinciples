@@ -38,6 +38,7 @@ dependencies:
 - dlist
 - trifecta
 - parsers
+- raw-strings-qq
 
 library:
   source-dirs: src

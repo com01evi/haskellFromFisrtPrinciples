@@ -52,7 +52,7 @@ testParse :: Parser [Person] -> IO ()
 testParse p = print $ parseString p mempty "Person 123, , taro\nPerson 24, , akie"
 
 parsePerson :: Parser Person 
-parsePerson = Person <$ string "Person" <* space <*> integer <* comma <* comma <*> many (oneOf ['a'..'z']) <* (newline <|> return ' ')
+parsePerson = Person <$ string "Person" <* space <*> integer <* comma <* comma <*> many (oneOf ['a'..'z']) <* many newline
 
 parsePeople :: Parser [Person]
 parsePeople = many parsePerson
@@ -152,7 +152,7 @@ def|]
 
 parseCorrectly' :: Parser NumberOrString
 parseCorrectly' = do
-  skipMany newline
+  many newline
   parseNos
 
 parseCorrectly :: Parser [NumberOrString]

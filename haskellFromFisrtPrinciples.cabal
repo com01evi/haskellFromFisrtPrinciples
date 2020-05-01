@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: bd092853740e6895bd822000ef945c15470ddcae7e16cbcd1413eb709c96d0d2
+-- hash: b9a9b53ef0a388e038dcf5d237889678ba13a50dbc23b6ebcbab7b8608507112
 
 name:           haskellFromFisrtPrinciples
 version:        0.1.0.0
@@ -50,6 +50,7 @@ library
       Chapter21.Traversable
       Chapter22.Reader
       Chapter23.State
+      Chapter24.ConfFile
       Chapter24.Parser
       Chapter3
       Chapter4
@@ -70,6 +71,7 @@ library
     , containers
     , dlist
     , hedis
+    , hspec
     , morse
     , mtl
     , network-uri
@@ -100,6 +102,7 @@ executable haskellFromFisrtPrinciples-exe
     , dlist
     , haskellFromFisrtPrinciples
     , hedis
+    , hspec
     , morse
     , mtl
     , network-uri

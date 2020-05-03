@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Main where
 
 import Chapter2(square)
@@ -7,8 +9,10 @@ import Chapter14.Exercise(half, halfIndentity, listOrdered, plusAssociative, mul
 import Chapter15.Monoid
 import Chapter15.Semigroup
 import Chapter16.Functor
+import Chapter24.ConfFile
 import qualified Chapter16.Functor as C16F
 import Data.List(sort)
+import Data.ByteString(ByteString)
 import Test.QuickCheck
 import Test.Hspec
 
@@ -275,6 +279,41 @@ main = hspec $ do
       property $ (functorIdentity :: C16F.Constant String Int -> Bool)
     it "tests Constant Functor compose equality" $ do
       property $ (functorCompose :: (Int -> Int) -> (Int -> Int) -> C16F.Constant String Int -> Bool)
+
+  describe "Assignment Parsing" $
+    it "can parse a simple assignment" $ do
+      let m = testparseAssignment
+          r' = maybeSuccess m
+      r' `shouldBe` Just ("woot", "wiki")
+
+  describe "Header Parsing" $ 
+    it "can parse a simple header" $ do
+      let m = testHeaderParsing
+          r' = maybeSuccess m
+      r' `shouldBe` Just (Header "blah")
+
+  describe "Comment parsing" $
+    it "Skips comment before header" $ do
+      let i = ("; woot\n[blah]" :: ByteString)
+          m = testCommentParsing i
+          r' = maybeSuccess m
+      r' `shouldBe` Just (Header "blah")
+
+  describe "Section Parsing" $
+    it "can parse a simple section" $ do
+      let m = testSectionParsing
+          r' = maybeSuccess m
+      r' `shouldBe` expected'
+
+  describe "INI parsing" $
+    it "Can parse multiple sections" $ do
+      let m = testINIParsing
+          r' = maybeSuccess m
+      r' `shouldBe` expected2
+              
+
+
+
 
 twice f = f . f
 fourTimes = twice . twice

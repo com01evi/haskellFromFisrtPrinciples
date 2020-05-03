@@ -1,4 +1,4 @@
-{-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE QuasiQuotes, OverloadedStrings #-}
 
 module Chapter24.Parser(
   hoge,
@@ -16,10 +16,12 @@ module Chapter24.Parser(
   alsoBad,
   shouldWork,
   shouldAlsoWork,
-  testVirtuous,
+  testWithAttoParsec,
+  testWithTrifecta,
   onlyInteger,
   parseNosmain,
   eitherOr,
+  eitherOr',
   parseCorrectly,
   parseDecimalOrFraction
 )where
@@ -29,8 +31,11 @@ import Text.Parser.Token
 import Text.Parser.Combinators
 import Text.Trifecta.Combinators
 import Control.Applicative
+import Data.Attoparsec.Text (parseOnly)
 import Data.Char
 import Data.Ratio ((%))
+import Data.String
+import Data.Text.Internal(Text)
 import Text.RawString.QQ
 
 stop :: Parser a
@@ -102,7 +107,15 @@ shouldWork = "1/2"
 
 shouldAlsoWork = "2/1"
 
-parserFraction :: Parser Rational
+badFractions = "1/0"
+
+alsoBads = "10"
+
+shouldWorks = "1/2"
+
+shouldAlsoWorks = "2/1"
+
+parserFraction :: (Monad m, TokenParsing m) => m Rational
 parserFraction = do
   numerator <- decimal
   char '/'
@@ -111,13 +124,21 @@ parserFraction = do
     0 -> fail  "Denominator cannot be zero"
     _ -> return (numerator % denominator)
 
-testVirtuous :: IO ()
-testVirtuous = do
+testWithAttoParsec :: IO ()
+testWithAttoParsec = do
+  let attoP = parseOnly parserFraction
+  print $ attoP badFraction
+  print $ attoP alsoBad
+  print $ attoP shouldWork
+  print $ attoP shouldAlsoWork
+
+testWithTrifecta :: IO ()
+testWithTrifecta = do
   let virtuousFraction' = parseString parserFraction mempty
-  print $ virtuousFraction' badFraction
-  print $ virtuousFraction' alsoBad
-  print $ virtuousFraction' shouldWork
-  print $ virtuousFraction' shouldAlsoWork
+  print $ virtuousFraction' badFractions 
+  print $ virtuousFraction' alsoBads
+  print $ virtuousFraction' shouldWorks
+  print $ virtuousFraction' shouldAlsoWorks
 
 onlyInteger :: Parser Integer
 onlyInteger = do
@@ -150,10 +171,15 @@ abc
 456
 def|]
 
+eitherOr' :: String
+eitherOr' = "\n123 \nabc \n456 \ndef"
+
 parseCorrectly' :: Parser NumberOrString
 parseCorrectly' = do
   many newline
-  parseNos
+  nos <- parseNos
+  many space
+  return nos
 
 parseCorrectly :: Parser [NumberOrString]
 parseCorrectly = do

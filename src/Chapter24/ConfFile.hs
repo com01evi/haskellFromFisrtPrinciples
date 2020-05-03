@@ -5,7 +5,18 @@ module Chapter24.ConfFile(
   sectionEx'',
   parseINI,
   assignmentEx,
-  sectionEx
+  sectionEx,
+  p',
+  testparseAssignment,
+  maybeSuccess,
+  testHeaderParsing,
+  Header(Header),
+  testCommentParsing,
+  testSectionParsing,
+  expected',
+  testINIParsing,
+  expected2,
+  l'
 )where
 
 import Text.Trifecta
@@ -49,7 +60,11 @@ skipEol :: Parser ()
 skipEol = skipMany newline
 
 parseAssignments :: Parser Assignments
-parseAssignments = M.fromList <$> some parseAssignment
+parseAssignments = do 
+  skipComments
+  assignments <- some parseAssignment
+  skipWhitespace
+  return $ M.fromList assignments
 
 commentEx :: ByteString
 commentEx = "; last modified 1 Aplil 2001 by John Doe"
@@ -67,6 +82,9 @@ sectionEx'' = [r|
   [whatisit]
   red=intoothandclaw
   |]
+
+sectionEx' :: ByteString
+sectionEx' = ";ignore me\n[status]\nChris=Texas"
 
 sectionEx :: ByteString
 sectionEx = ";comment\n[section]\nhost=wikipedia\nalias=claw\n\n[whatisit]\nred=int"
@@ -104,3 +122,40 @@ parseINI = do
   sections <- some parseSection
   let mapha = foldr rollup mempty sections
   return $ Config mapha
+
+maybeSuccess :: Result a -> Maybe a
+maybeSuccess (Success a ) = Just a
+maybeSuccess _ = Nothing
+
+testparseAssignment :: Result (Name, Value)
+testparseAssignment = parseByteString parseAssignment mempty assignmentEx
+
+testHeaderParsing :: Result Header
+testHeaderParsing = parseByteString parseHeader mempty headerEx
+
+testCommentParsing :: ByteString -> Result Header
+testCommentParsing = parseByteString (skipComments >> parseHeader) mempty
+
+testSectionParsing :: Result Section
+testSectionParsing = parseByteString parseSection mempty sectionEx'
+
+expected' :: Maybe Section
+expected' = Just (Section (Header "status") (M.fromList [("Chris", "Texas")]))
+
+testINIParsing :: Result Config
+testINIParsing = parseByteString parseINI mempty sectionEx
+
+sectionValues = M.fromList [("alias", "claw"), ("host", "wikipedia")]
+
+whatisitValues = M.fromList [("red", "int")]
+
+expected2 = Just (Config (M.fromList [(Header "section", sectionValues), (Header "whatisit", whatisitValues)]))
+
+p' :: Parser [Integer]
+p' = some $ do
+  i <- token $ some digit
+  return $ read i
+
+l' :: Parser [String]
+l' = some $ do
+  token $ some letter

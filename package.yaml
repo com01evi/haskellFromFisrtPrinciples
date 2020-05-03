@@ -40,6 +40,7 @@ dependencies:
 - trifecta
 - parsers
 - raw-strings-qq
+- attoparsec
 
 library:
   source-dirs: src

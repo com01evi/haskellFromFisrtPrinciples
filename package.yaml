@@ -41,6 +41,8 @@ dependencies:
 - parsers
 - raw-strings-qq
 - attoparsec
+- parsec
+- aeson
 
 library:
   source-dirs: src

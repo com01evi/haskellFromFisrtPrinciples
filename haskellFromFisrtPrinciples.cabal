@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 970cdd909449c627a52d02dce9b9e11701bd1c1f27643eb1b2c5d70c216da696
+-- hash: 25652b2bfb82a81ede94594c759f07627013dab56afefa6a37be6ff38f67af07
 
 name:           haskellFromFisrtPrinciples
 version:        0.1.0.0
@@ -51,7 +51,9 @@ library
       Chapter22.Reader
       Chapter23.State
       Chapter24.ConfFile
+      Chapter24.Marshalling
       Chapter24.Parser
+      Chapter24.PolymorphicParser
       Chapter3
       Chapter4
       Chapter5
@@ -65,6 +67,7 @@ library
       src
   build-depends:
       QuickCheck
+    , aeson
     , attoparsec
     , base >=4.7 && <5
     , bytestring
@@ -76,6 +79,7 @@ library
     , morse
     , mtl
     , network-uri
+    , parsec
     , parsers
     , random
     , raw-strings-qq
@@ -96,6 +100,7 @@ executable haskellFromFisrtPrinciples-exe
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       QuickCheck
+    , aeson
     , attoparsec
     , base >=4.7 && <5
     , bytestring
@@ -108,6 +113,7 @@ executable haskellFromFisrtPrinciples-exe
     , morse
     , mtl
     , network-uri
+    , parsec
     , parsers
     , random
     , raw-strings-qq
@@ -129,6 +135,7 @@ test-suite haskellFromFisrtPrinciples-test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       QuickCheck
+    , aeson
     , attoparsec
     , base >=4.7 && <5
     , bytestring
@@ -141,6 +148,7 @@ test-suite haskellFromFisrtPrinciples-test
     , morse
     , mtl
     , network-uri
+    , parsec
     , parsers
     , random
     , raw-strings-qq

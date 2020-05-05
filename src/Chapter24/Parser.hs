@@ -77,7 +77,7 @@ strToInt = snd . foldr (\x (mul, val) -> (mul * 10, x * mul + val)) (1,0) . map 
 pNL s = putStrLn $ '\n' : s
 
 int :: Parser Int
-int = fmap strToInt $ many $ oneOf ['0'..'9']
+int = fmap strToInt $ some $ oneOf ['0'..'9']
 
 parseTestMain :: IO ()
 parseTestMain = do

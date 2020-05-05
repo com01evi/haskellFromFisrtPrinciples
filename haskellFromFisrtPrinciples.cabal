@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 25652b2bfb82a81ede94594c759f07627013dab56afefa6a37be6ff38f67af07
+-- hash: 105f0ef42a63a62333abbd2c1138164c16397518b9560550d1972598f58555cf
 
 name:           haskellFromFisrtPrinciples
 version:        0.1.0.0
@@ -83,6 +83,7 @@ library
     , parsers
     , random
     , raw-strings-qq
+    , scientific
     , scotty
     , semigroups
     , text
@@ -117,6 +118,7 @@ executable haskellFromFisrtPrinciples-exe
     , parsers
     , random
     , raw-strings-qq
+    , scientific
     , scotty
     , semigroups
     , text
@@ -152,6 +154,7 @@ test-suite haskellFromFisrtPrinciples-test
     , parsers
     , random
     , raw-strings-qq
+    , scientific
     , scotty
     , semigroups
     , text

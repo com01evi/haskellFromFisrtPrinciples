@@ -23,7 +23,10 @@ module Chapter24.Parser(
   eitherOr,
   eitherOr',
   parseCorrectly,
-  parseDecimalOrFraction
+  parseDecimalOrFraction,
+  int3,
+  int2,
+  int4
 )where
 
 import Text.Trifecta
@@ -78,6 +81,24 @@ pNL s = putStrLn $ '\n' : s
 
 int :: Parser Int
 int = fmap strToInt $ some $ oneOf ['0'..'9']
+
+myinteger :: Parser Integer 
+myinteger = fmap read $ some $ oneOf ['0'..'9']
+
+int2 :: Parser Int
+int2 = do 
+  char '-'
+  i <- int
+  return (-i)
+
+int3 :: Parser Int
+int3 = do 
+  char '+'
+  i <- int
+  return (i)
+
+int4 :: Parser Int
+int4 = int3 <|> int2 <|> int
 
 parseTestMain :: IO ()
 parseTestMain = do

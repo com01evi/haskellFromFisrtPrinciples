@@ -1,5 +1,3 @@
-{-# LANGUAGE InstanceSigs #-}
-
 module Chapter25.ComposingTypes(
   Identity(Identity,runIdentity),
   Compose(Compose, getCompose)  

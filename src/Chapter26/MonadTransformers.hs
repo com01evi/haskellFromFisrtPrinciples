@@ -3,6 +3,7 @@ module Chapter26.MonadTransformers(
 
 import Control.Monad.Identity
 
+
 innerMost :: [Maybe (Identity (a -> b))] -> [Maybe (Identity a -> Identity b)]
 innerMost = (fmap . fmap) (<*>)
 
@@ -70,5 +71,6 @@ instance Monad m => Monad (StateT s m) where
   StateT smas >>= f = StateT smbs
                       where smbs s = do
                                      (a, s') <- smas s
-                                     let g = f a
-                                     runStateT g s'
+                                     runStateT (f a) s'
+
+

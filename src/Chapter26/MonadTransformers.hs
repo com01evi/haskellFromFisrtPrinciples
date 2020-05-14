@@ -2,7 +2,8 @@ module Chapter26.MonadTransformers(
 )where
 
 import Control.Monad.Identity
-
+import Control.Monad.Trans.Class
+import Control.Monad.IO.Class
 
 innerMost :: [Maybe (Identity (a -> b))] -> [Maybe (Identity a -> Identity b)]
 innerMost = (fmap . fmap) (<*>)
@@ -74,3 +75,43 @@ instance Monad m => Monad (StateT s m) where
                                      runStateT (f a) s'
 
 
+instance MonadTrans (EitherT e) where
+  lift = EitherT . (liftM Right)
+
+instance MonadTrans (StateT s) where
+  lift m = StateT f
+           where f s = do
+                       a <- m
+                       return (a, s)
+
+
+
+newtype MaybeT m a = MaybeT {runMaybeT :: m (Maybe a)}
+
+instance Functor m => Functor (MaybeT m) where
+  fmap f (MaybeT mma) = MaybeT ((fmap . fmap) f mma)
+
+instance Applicative m => Applicative (MaybeT m) where
+  pure x = (MaybeT . pure . Just) x
+  (MaybeT mmf) <*> (MaybeT mma) = MaybeT ((<*>) <$> mmf <*> mma)
+
+instance Monad m => Monad (MaybeT m) where
+  (MaybeT mma) >>= f = MaybeT (mma >>= (\ma -> case ma of
+                                                 Just a -> (runMaybeT . f) a
+                                                 Nothing -> return Nothing))
+
+instance MonadTrans (MaybeT) where
+  lift = MaybeT . (liftM Just)
+
+instance (MonadIO m) => MonadIO(MaybeT m) where
+  liftIO = lift . liftIO
+
+
+instance MonadTrans (ReaderT r) where
+  lift m = ReaderT (const m)
+
+instance (MonadIO m) => MonadIO(ReaderT r m) where
+  liftIO = lift . liftIO
+
+instance (MonadIO m) => MonadIO(StateT s m) where
+  liftIO = lift . liftIO

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 41dcf7f16be615cb222a4339167b8e512a9e54796c495c205b5230ee6d7a8099
+-- hash: 923b96b8da513ab586bdd333e0bd3f41e30ece29605d5b5e3b6c5f771cfd240a
 
 name:           haskellFromFisrtPrinciples
 version:        0.1.0.0
@@ -57,6 +57,7 @@ library
       Chapter25.ComposingTypes
       Chapter26.MonadTransformers
       Chapter26.Outerinner
+      Chapter26.Scotty
       Chapter3
       Chapter4
       Chapter5

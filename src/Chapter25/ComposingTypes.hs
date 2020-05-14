@@ -77,18 +77,4 @@ instance Applicative f => Applicative (IdentityT f) where
 instance Monad m => Monad (IdentityT m) where
   (IdentityT ma) >>= f = IdentityT (ma >>= runIdentityT . f)
 
-newtype MaybeT m a = MaybeT {runMaybeT :: m (Maybe a)}
-
-instance Functor m => Functor (MaybeT m) where
-  fmap f (MaybeT mma) = MaybeT ((fmap . fmap) f mma)
-
-instance Applicative m => Applicative (MaybeT m) where
-  pure x = (MaybeT . pure . Just) x
-  (MaybeT mmf) <*> (MaybeT mma) = MaybeT ((<*>) <$> mmf <*> mma)
-
-instance Monad m => Monad (MaybeT m) where
-  (MaybeT mma) >>= f = MaybeT (mma >>= (\ma -> case ma of
-                                                 Just a -> (runMaybeT . f) a
-                                                 Nothing -> return Nothing))
-
  

@@ -1,9 +1,21 @@
+{-# LANGUAGE FlexibleContexts #-}
+
 module Chapter26.MonadTransformers(
+repeat',
+loan,
+result,
+StateT(StateT,runStateT),
+ReaderT(ReaderT, runReaderT),
+game,
+loop,
+rPrintAndInc,
+sPrintIncAccum
 )where
 
 import Control.Monad.Identity
 import Control.Monad.Trans.Class
 import Control.Monad.IO.Class
+import Control.Monad
 
 innerMost :: [Maybe (Identity (a -> b))] -> [Maybe (Identity a -> Identity b)]
 innerMost = (fmap . fmap) (<*>)
@@ -106,7 +118,6 @@ instance MonadTrans (MaybeT) where
 instance (MonadIO m) => MonadIO(MaybeT m) where
   liftIO = lift . liftIO
 
-
 instance MonadTrans (ReaderT r) where
   lift m = ReaderT (const m)
 
@@ -115,3 +126,85 @@ instance (MonadIO m) => MonadIO(ReaderT r m) where
 
 instance (MonadIO m) => MonadIO(StateT s m) where
   liftIO = lift . liftIO
+
+type Date = Int
+type Rate = Float 
+type Amount = Float
+type Loan = Float
+
+loan :: Rate -> Amount -> Loan
+loan r a = a + (a * r)
+
+repeat' :: (a -> a) -> Int -> a -> a
+repeat' f 0 x = x
+repeat' f n x = repeat' f (n-1) (f x)
+
+result :: Float -> Int -> Float
+result amount count = foldr (\f acc -> f acc) amount $ replicate count (loan 0.1)
+
+game :: StateT Int IO Int
+game = StateT f
+       where f n = do
+                   x <-  (read <$> getLine :: IO Int)
+                   y <-  (read <$> getLine :: IO Int)
+                   putStrLn $ "C is: " ++ show x
+                   putStrLn $ "You are: " ++ show y
+                   if x == y 
+                   then do 
+                          putStrLn "You win!"
+                          print $ (0, n+1)
+                          return (0, n+1)
+                   else do
+                          putStrLn "You lose"
+                          print $ (0, n)
+                          return (0, n)
+
+loop :: StateT Int IO Int -> StateT Int IO Int
+loop g = do
+         g
+         state <- get'
+         if state == 3
+         then g
+         else loop g
+
+get' :: (Monad m) => StateT s m s
+get' = StateT f 
+       where f s = do
+                   return (s, s)
+ 
+type Reader r a = ReaderT r Identity a
+
+rDec :: Num a => Reader a a
+rDec = ReaderT (Identity . (subtract 1))
+
+rShow :: Show a => ReaderT a Identity String
+rShow = ReaderT (Identity . show)
+
+rPrintAndInc :: (Num a, Show a) => ReaderT a IO a
+rPrintAndInc = ReaderT f
+               where f n = do
+                           putStrLn $ "Hi: " ++ show n
+                           return (n+1)
+
+sPrintIncAccum :: (Num a, Show a) => StateT a IO String
+sPrintIncAccum = StateT f
+                 where f n = do
+                             putStrLn $ "Hi: " ++ show n
+                             return (show n, n+1)
+
+isValid :: String -> Bool
+isValid v = elem '!' v
+
+maybeExcite :: MaybeT IO String
+maybeExcite = MaybeT $ do
+  v <- getLine
+  guard $ isValid v
+  return (Just v)
+
+doExcite :: IO ()
+doExcite = do
+    putStrLn "say something excite!"
+    excite <- runMaybeT maybeExcite 
+    case excite of
+      Nothing -> putStrLn "MOAR EXCITE"
+      Just e -> putStrLn $ "Good, was very excite: " ++ e

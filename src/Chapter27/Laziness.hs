@@ -1,9 +1,12 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Chapter27.Laziness(
-answer
+answer,
+tracef,
+traceg,
 )where
 
 import Data.List.Ordered
+import Debug.Trace
 
 hypo :: IO ()
 hypo = do 
@@ -43,3 +46,7 @@ hypo'' = do
   case s of
     "hi" -> print x
     _ -> putStrLn "hello"
+
+tracef x = (x ()) + (x ())
+
+traceg = const (trace "hi" 2)

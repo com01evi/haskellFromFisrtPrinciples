@@ -3,6 +3,7 @@ module Chapter27.Laziness(
 answer,
 tracef,
 traceg,
+lazyEval
 )where
 
 import Data.List.Ordered
@@ -50,3 +51,9 @@ hypo'' = do
 tracef x = (x ()) + (x ())
 
 traceg = const (trace "hi" 2)
+
+forever :: Monad m => m a -> m b
+forever a = let a' = a >> a' in a'
+
+lazyEval :: (a,b) -> String
+lazyEval ~(x,y) = const "fire" x

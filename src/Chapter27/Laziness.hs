@@ -1,9 +1,17 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, BangPatterns #-}
 module Chapter27.Laziness(
 answer,
 tracef,
 traceg,
-lazyEval
+lazyEval,
+banging,
+first',
+second',
+Foo(Foo),
+blah,
+oneEl,
+hogex,
+mainS
 )where
 
 import Data.List.Ordered
@@ -57,3 +65,35 @@ forever a = let a' = a >> a' in a'
 
 lazyEval :: (a,b) -> String
 lazyEval ~(x,y) = const "fire" x
+
+banging :: Bool -> Int
+banging !b = 1
+
+data Foo = Foo Int !Int
+
+first' :: Foo -> Int
+first' (Foo x _) = x
+
+second' :: Foo -> Int
+second' (Foo _ y) = y
+
+blah x = 1
+
+data ListS a = Nil | Cons !a (ListS a) deriving(Eq, Show)
+
+sTake :: Int -> ListS a -> ListS a
+sTake n _
+  | n <= 0 = Nil
+sTake n Nil = Nil
+sTake n (Cons x xs) = Cons x (sTake (n-1) xs)
+
+twoEls = Cons undefined (Cons undefined Nil)
+oneEl = sTake 0 twoEls
+
+hogex :: Int -> Int
+hogex x = x
+
+x = undefined
+y = "blah"
+mainS = do 
+    print (x `seq` snd (x, y))

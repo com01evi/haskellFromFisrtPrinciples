@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 1370a36b9c21321ca5a5eddd6295bcc02fb3d622ea957db2ec6dff80f1b97145
+-- hash: f3853945370efa7c60e0ec041c8d501840882b0cb8d7491f0c6485f8ca56cd0b
 
 name:           haskellFromFisrtPrinciples
 version:        0.1.0.0
@@ -59,6 +59,7 @@ library
       Chapter26.Outerinner
       Chapter26.Scotty
       Chapter27.Laziness
+      Chapter28.BasicLib
       Chapter3
       Chapter4
       Chapter5
@@ -78,6 +79,7 @@ library
     , bytestring
     , checkers
     , containers
+    , criterion
     , data-ordlist
     , dlist
     , hedis
@@ -113,6 +115,7 @@ executable haskellFromFisrtPrinciples-exe
     , bytestring
     , checkers
     , containers
+    , criterion
     , data-ordlist
     , dlist
     , haskellFromFisrtPrinciples
@@ -150,6 +153,7 @@ test-suite haskellFromFisrtPrinciples-test
     , bytestring
     , checkers
     , containers
+    , criterion
     , data-ordlist
     , dlist
     , haskellFromFisrtPrinciples

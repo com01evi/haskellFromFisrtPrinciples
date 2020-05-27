@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings, BangPatterns #-}
+{-# LANGUAGE OverloadedStrings, BangPatterns, Strict #-}
 module Chapter27.Laziness(
 answer,
 tracef,
@@ -96,4 +96,6 @@ hogex x = x
 x = undefined
 y = "blah"
 mainS = do 
-    print (x `seq` snd (x, y))
+    print (homu x y)
+
+homu !x y = snd (x, y)

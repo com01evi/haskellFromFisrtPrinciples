@@ -45,6 +45,7 @@ dependencies:
 - aeson
 - scientific
 - data-ordlist
+- criterion
 
 library:
   source-dirs: src

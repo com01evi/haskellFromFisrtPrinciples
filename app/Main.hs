@@ -14,7 +14,7 @@ import qualified Chapter13.DogsRule as D
 import System.IO
 import Chapter14.Arbitrary
 import Chapter15.Semigroup
-import qualified Chapter28.BasicLib as B (main)
+import qualified Chapter28.BasicLib as B
 
 main :: IO ()
 main = B.main

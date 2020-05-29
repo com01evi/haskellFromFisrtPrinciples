@@ -15,6 +15,7 @@ import System.IO
 import Chapter14.Arbitrary
 import Chapter15.Semigroup
 import qualified Chapter28.BasicLib as B
+import Chapter28.Profile
 
 main :: IO ()
-main = B.main
+main = profileMain

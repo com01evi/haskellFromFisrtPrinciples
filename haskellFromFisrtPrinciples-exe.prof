@@ -1,0 +1,41 @@
+	Fri May 29 12:42 2020 Time and Allocation Profiling Report  (Final)
+
+	   haskellFromFisrtPrinciples-exe +RTS -N -p -RTS
+
+	total time  =        0.06 secs   (225 ticks @ 1000 us, 4 processors)
+	total alloc = 792,129,880 bytes  (excludes profiling overheads)
+
+COST CENTRE MODULE            SRC                                      %time %alloc
+
+g           Chapter28.Profile src/Chapter28/Profile.hs:(11,1)-(13,14)   91.6   90.9
+f           Chapter28.Profile src/Chapter28/Profile.hs:(6,1)-(8,14)      7.6    9.1
+
+
+                                                                                                    individual      inherited
+COST CENTRE        MODULE                SRC                                     no.     entries  %time %alloc   %time %alloc
+
+MAIN               MAIN                  <built-in>                              153          0    0.9    0.0   100.0  100.0
+ CAF               GHC.Conc.Signal       <entire-module>                         249          0    0.0    0.0     0.0    0.0
+ CAF               GHC.IO.Encoding       <entire-module>                         231          0    0.0    0.0     0.0    0.0
+ CAF               GHC.IO.Encoding.Iconv <entire-module>                         229          0    0.0    0.0     0.0    0.0
+ CAF               GHC.IO.Handle.FD      <entire-module>                         220          0    0.0    0.0     0.0    0.0
+ CAF               GHC.IO.Handle.Text    <entire-module>                         218          0    0.0    0.0     0.0    0.0
+ CAF               GHC.Event.Poll        <entire-module>                         170          0    0.0    0.0     0.0    0.0
+ CAF               GHC.Event.Thread      <entire-module>                         169          0    0.0    0.0     0.0    0.0
+ CAF:main1         Main                  <no location info>                      304          0    0.0    0.0     0.0    0.0
+  main             Main                  app/Main.hs:21:1-18                     306          1    0.0    0.0     0.0    0.0
+ CAF:profileMain1  Chapter28.Profile     <no location info>                      276          0    0.0    0.0     0.0    0.0
+  profileMain      Chapter28.Profile     src/Chapter28/Profile.hs:(16,1)-(18,3)  307          1    0.0    0.0     0.0    0.0
+ CAF:profileMain10 Chapter28.Profile     <no location info>                      274          0    0.0    0.0     7.6    9.1
+  f                Chapter28.Profile     src/Chapter28/Profile.hs:(6,1)-(8,14)   312          0    7.6    9.1     7.6    9.1
+ CAF:profileMain2  Chapter28.Profile     <no location info>                      272          0    0.0    0.0     0.0    0.0
+  g                Chapter28.Profile     src/Chapter28/Profile.hs:(11,1)-(13,14) 313          1    0.0    0.0     0.0    0.0
+ CAF:profileMain3  Chapter28.Profile     <no location info>                      270          0    0.0    0.0     0.0    0.0
+ CAF:profileMain5  Chapter28.Profile     <no location info>                      271          0    0.0    0.0    91.6   90.9
+  g                Chapter28.Profile     src/Chapter28/Profile.hs:(11,1)-(13,14) 315          0   91.6   90.9    91.6   90.9
+ CAF:profileMain7  Chapter28.Profile     <no location info>                      275          0    0.0    0.0     0.0    0.0
+  f                Chapter28.Profile     src/Chapter28/Profile.hs:(6,1)-(8,14)   310          1    0.0    0.0     0.0    0.0
+ CAF:profileMain8  Chapter28.Profile     <no location info>                      273          0    0.0    0.0     0.0    0.0
+ profileMain       Chapter28.Profile     src/Chapter28/Profile.hs:(16,1)-(18,3)  309          0    0.0    0.0     0.0    0.0
+  f                Chapter28.Profile     src/Chapter28/Profile.hs:(6,1)-(8,14)   311          0    0.0    0.0     0.0    0.0
+  g                Chapter28.Profile     src/Chapter28/Profile.hs:(11,1)-(13,14) 314          0    0.0    0.0     0.0    0.0

@@ -5,6 +5,7 @@ main,
 
 import Criterion.Main
 import Data.Char
+import Debug.Trace
 
 infixl 9 !?
 
@@ -22,10 +23,13 @@ charToInt :: Char -> Int
 charToInt = read . show
 
 myList :: [Int]
-myList = [1..9999]
+myList = trace "myList was evaluated" ([1..9999] ++ [undefined])
 
 main :: IO ()
 main = defaultMain [ bench "index list 9999"
                      $ whnf (myList !!) 9998
                    , bench "index list maybe index 9999"  
-                     $ whnf (myList !?) 9998]
+                     $ nf (myList !?) 9999]
+
+
+

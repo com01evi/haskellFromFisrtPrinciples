@@ -16,6 +16,7 @@ import Chapter14.Arbitrary
 import Chapter15.Semigroup
 import qualified Chapter28.BasicLib as B
 import Chapter28.Profile
+import Chapter28.Map
 
 main :: IO ()
-main = profileMain
+main = mapMain

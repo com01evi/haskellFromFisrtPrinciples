@@ -1,6 +1,9 @@
 module Chapter28.Profile(
-profileMain
+  profileMain,
+  memoryMain
 )where
+
+import Control.Monad
 
 f :: IO ()
 f = do
@@ -16,3 +19,9 @@ profileMain :: IO ()
 profileMain = do
   f 
   g
+
+blah :: [Integer]
+blah = [1..1000]
+
+memoryMain :: IO ()
+memoryMain = replicateM_ 10000 (print blah)

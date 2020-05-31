@@ -19,4 +19,4 @@ import Chapter28.Profile
 import Chapter28.Map
 
 main :: IO ()
-main = mapMain
+main = seqMain

@@ -46,6 +46,7 @@ dependencies:
 - scientific
 - data-ordlist
 - criterion
+- vector
 
 library:
   source-dirs: src

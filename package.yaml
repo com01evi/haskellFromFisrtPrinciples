@@ -47,6 +47,7 @@ dependencies:
 - data-ordlist
 - criterion
 - vector
+- primitive
 
 library:
   source-dirs: src

@@ -2,14 +2,21 @@ module Chapter28.Map(
   mapMain,
   setMain,
   seqMain,
-  vectorMain
+  vectorMain,
+  vecMapMain,
+  batchMain
 )where
 
 import Criterion.Main
 import qualified Data.Map as M
 import qualified Data.Set as S
 import qualified Data.Sequence as Se
+import Data.Vector ((//))
 import qualified Data.Vector as V
+import Control.Monad.Primitive
+import Control.Monad.ST
+import qualified Data.Vector.Mutable as MV
+import qualified Data.Vector.Generic.Mutable as GM
 
 genList :: Int -> [(String, Int)]
 genList n = go n []
@@ -105,3 +112,41 @@ vectorMain = defaultMain [ bench "slicing list" $
                          , bench "slicing vector" $
                            whnf (V.head . V.slice 100 900) v
                          ] 
+
+testV' :: Int -> V.Vector Int
+testV' n = V.map (n+) $ V.map (n+) $ V.map (n+) $ V.map (n+) $ V.fromList [1..10000]
+
+testV :: Int -> V.Vector Int
+testV n = V.map ((n+) . (n+) . (n+) . (n+)) $ V.fromList [1..10000]
+
+vecMapMain :: IO ()
+vecMapMain = defaultMain [ bench "vector map prefused" $
+                           whnf testV 9998
+                         , bench "vector map will be fused" $ 
+                           whnf testV' 9998
+                         ]
+
+vec :: V.Vector Int
+vec = V.fromList [1..10000]
+
+slow :: Int -> V.Vector Int
+slow n = go n vec
+         where go 0 v = v
+               go n v = go (n-1) (v // [(n, 0)])
+
+batchList :: Int -> V.Vector Int
+batchList n = vec // updates
+              where updates = fmap (\i -> (i, 0)) [0..n]
+
+batchMain :: IO ()
+batchMain = defaultMain [ bench "slow" $
+                          whnf slow 9998
+                        , bench "batch list" $
+                          whnf batchList 9998]
+
+mutableUpdateIO :: Int -> IO (MV.MVector RealWorld Int)
+mutableUpdateIO n = do 
+  mvec <- GM.new (n+1)
+  go n mvec 
+    where go 0 v = return v
+          go n v = (MV.write v n 0) >> go (n-1) v

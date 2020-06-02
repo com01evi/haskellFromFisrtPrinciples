@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d35ad3e282c62e1a17d372d564fca26824d2a21f1b6e4def6c786e405a96f22b
+-- hash: ef40ec169df63f6b4935ff3f5a54bf2931a7b70886f9b88658716767ce17c5fd
 
 name:           haskellFromFisrtPrinciples
 version:        0.1.0.0
@@ -91,6 +91,7 @@ library
     , network-uri
     , parsec
     , parsers
+    , primitive
     , random
     , raw-strings-qq
     , scientific
@@ -129,6 +130,7 @@ executable haskellFromFisrtPrinciples-exe
     , network-uri
     , parsec
     , parsers
+    , primitive
     , random
     , raw-strings-qq
     , scientific
@@ -168,6 +170,7 @@ test-suite haskellFromFisrtPrinciples-test
     , network-uri
     , parsec
     , parsers
+    , primitive
     , random
     , raw-strings-qq
     , scientific

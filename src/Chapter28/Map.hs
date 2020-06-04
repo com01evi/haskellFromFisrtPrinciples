@@ -4,9 +4,14 @@ module Chapter28.Map(
   seqMain,
   vectorMain,
   vecMapMain,
-  batchMain
+  batchMain,
+  dlistMain,
+  popState,
+  Queue(Queue),
+  pushState
 )where
 
+import Control.Monad.Trans.State
 import Criterion.Main
 import qualified Data.Map as M
 import qualified Data.Set as S
@@ -150,3 +155,71 @@ mutableUpdateIO n = do
   go n mvec 
     where go 0 v = return v
           go n v = (MV.write v n 0) >> go (n-1) v
+
+mutableUpdateST :: Int -> V.Vector Int
+mutableUpdateST n = runST $ do
+  mvec <- GM.new (n+1)
+  go n mvec 
+    where go 0 v = V.freeze v
+          go n v = (MV.write v n 0) >> go (n-1) v
+
+newtype DList a = DL {unDL :: [a] -> [a]}
+
+empty :: DList a
+empty = DL id
+
+singleton :: a -> DList a
+singleton x = DL (\xs -> x:xs)
+
+toList :: DList a -> [a]
+toList dl = unDL dl []
+
+infixr `cons`
+cons :: a -> DList a -> DList a
+cons x xs = DL ((x:) . unDL xs)
+
+infixr `snoc`
+snoc :: DList a -> a -> DList a
+snoc xs x = DL ( (++[x]) . unDL xs)
+
+append :: DList a -> DList a -> DList a
+append xs ys = DL (unDL xs . unDL ys)
+
+schlemiel :: Int -> [Int]
+schlemiel i = go i []
+  where go 0 xs = xs
+        go n xs = go (n-1) ([n] ++ xs)
+
+constructDlist :: Int -> [Int]
+constructDlist i = toList $ go i empty
+  where go 0 xs = xs
+        go n xs = go (n-1) (singleton n `append` xs)
+
+dlistMain :: IO ()
+dlistMain = defaultMain [ bench "concat list" $
+                          whnf schlemiel 123456
+                        , bench "concat dlist" $
+                          whnf constructDlist 123456]
+
+data Queue a = Queue { enqueue :: [a]
+                     , dequeue :: [a]}deriving(Eq,Show)
+
+push :: a -> Queue a -> Maybe (a, Queue a)
+push x (Queue xs ys) = Just (x, Queue (x:xs) ys)
+
+pushState :: a -> StateT (Queue a) Maybe a
+pushState x = StateT $ push x 
+
+pop :: Queue a -> Maybe (a, Queue a)
+pop (Queue [] []) = Nothing
+pop (Queue xs []) = pop (Queue [] (reverse xs))
+pop (Queue xs (y:ys)) = Just (y, Queue xs ys)
+
+popState :: StateT (Queue a) Maybe a
+popState = StateT pop
+
+pop' :: a -> [a] -> [a]
+pop' x xs = x:xs
+
+push' :: [a] -> Maybe (a, [a])
+push' = undefined

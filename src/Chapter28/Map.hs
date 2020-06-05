@@ -8,7 +8,9 @@ module Chapter28.Map(
   dlistMain,
   popState,
   Queue(Queue),
-  pushState
+  pushState,
+  popl,
+  queueMain
 )where
 
 import Control.Monad.Trans.State
@@ -218,8 +220,39 @@ pop (Queue xs (y:ys)) = Just (y, Queue xs ys)
 popState :: StateT (Queue a) Maybe a
 popState = StateT pop
 
-pop' :: a -> [a] -> [a]
-pop' x xs = x:xs
+push' :: a -> [a] -> Maybe (a, [a])
+push' x xs = Just (x, (x:xs))
 
-push' :: [a] -> Maybe (a, [a])
-push' = undefined
+pushState' :: a -> StateT [a] Maybe a
+pushState' x = StateT $ push' x
+
+pop' :: [a] -> Maybe (a, [a])
+pop' [] = Nothing
+pop' xs = Just (x , xs')
+          where (x:xs') = reverse xs
+
+popState' :: StateT [a] Maybe a
+popState' = StateT pop'
+
+pushl = runStateT (sequence (fmap pushState' [1..10000])) []
+
+popl = runStateT (sequence (replicate 9999 popState' ++ fmap pushState' [1..10000])) 
+f = getList' . popl
+
+getList' :: Maybe ([a], [a]) -> [a]
+getList' Nothing = []
+getList' (Just (_, xs)) = xs
+
+popq = runStateT (sequence (replicate 9999 popState ++ fmap pushState [1..100000]))
+
+getList :: Maybe ([a], Queue a) -> [a]
+getList Nothing = []
+getList (Just (_, q)) = dequeue q
+
+g = getList . popq
+
+queueMain :: IO ()
+queueMain = defaultMain [ bench "list push and pop" $
+                          whnf f []
+                        , bench "queue push and pop" $
+                          whnf g (Queue [] [])]

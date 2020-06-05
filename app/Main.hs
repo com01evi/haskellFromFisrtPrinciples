@@ -19,4 +19,4 @@ import Chapter28.Profile
 import Chapter28.Map
 
 main :: IO ()
-main = dlistMain
+main = queueMain

@@ -253,3 +253,5 @@ parseTime = do
   char ':'
   min <- int
   return $ Time hour min
+
+text = "# 2025-02-05\n08:00 breadkfast\n09:00 lunch\n\n# 2025-02-06\n08:00 homu\n09:00 hoge"

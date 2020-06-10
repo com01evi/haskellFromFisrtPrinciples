@@ -21,13 +21,16 @@ module Chapter24.Marshalling(
   parseComment,
   parseDate,
   parsePlan,
-  parseSchedule
+  parseSchedule,
+  scheduleMain
 )where
 
 import Control.Applicative
 import Data.Aeson
 import Data.ByteString.Lazy (ByteString)
+import qualified Data.ByteString as B
 import Data.Char
+import qualified Data.Map as M
 import Data.Monoid(Any(Any,getAny))
 import Data.Scientific
 import qualified Data.Text as T
@@ -187,7 +190,7 @@ parsePhone4 = do
 
 data Schedule = Schedule Date [Plan] deriving(Eq, Show)
 
-data Date = Date Year Month Day deriving(Eq, Show)
+data Date = Date Year Month Day deriving(Eq, Show, Ord)
 
 type Year = Int
 type Month = Int
@@ -255,3 +258,20 @@ parseTime = do
   return $ Time hour min
 
 text = "# 2025-02-05\n08:00 breadkfast\n09:00 lunch\n\n# 2025-02-06\n08:00 homu\n09:00 hoge"
+
+
+getSchdule :: String -> IO (M.Map Date [Plan])
+getSchdule filepath = do
+  d <- B.readFile filepath
+  let result = parseByteString (some parseSchedule) mempty d
+  case result of
+    (Text.Trifecta.Success schedules) -> return $ foldr scheduleInsert M.empty schedules
+    _ -> return M.empty
+
+scheduleInsert :: Schedule -> M.Map Date [Plan] -> M.Map Date [Plan]
+scheduleInsert (Schedule d plans) m = M.insert d plans m 
+
+scheduleMain :: IO ()
+scheduleMain = do 
+  schedules <- sequence $ fmap getSchdule ["/Users/shunyasumoto/Documents/haskellFromFisrtPrinciples/data/schedule.txt", "/Users/shunyasumoto/Documents/haskellFromFisrtPrinciples/data/schedule2.txt"]
+  print $ M.keys $ foldr M.union M.empty schedules

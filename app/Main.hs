@@ -17,6 +17,7 @@ import Chapter15.Semigroup
 import qualified Chapter28.BasicLib as B
 import Chapter28.Profile
 import Chapter28.Map
+import Chapter30.Exception
 
 main :: IO ()
-main = queueMain
+main = writeMain2

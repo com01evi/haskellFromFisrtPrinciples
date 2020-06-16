@@ -1,10 +1,12 @@
 {-# LANGUAGE ExistentialQuantification, GADTs #-}
 
 module Chapter30.Exception(
-  runDisc
+  runDisc,
+  writeMain,
+  writeMain2
 )where
 
-import Control.Exception(ArithException(..), AsyncException(..))
+import Control.Exception
 import Data.Typeable
 
 data MyException = forall e . (Show e, Typeable e) => MyException e
@@ -29,3 +31,16 @@ discriminateError (MyException e) =
                  Nothing -> SomethingElse
   
 runDisc n = either discriminateError (const SomethingElse) (multiError n)
+
+writeMain :: IO ()
+writeMain = do
+  writeFile "zzz" "hi"
+  putStrLn "wrote to file"
+
+handler :: SomeException -> IO ()
+handler (SomeException e) = do
+  putStrLn $ "we errored! It was: " ++ show e
+  writeFile "bbb" "hi"
+
+writeMain2 :: IO ()
+writeMain2 = writeFile "zzz" "hi" `catch` handler

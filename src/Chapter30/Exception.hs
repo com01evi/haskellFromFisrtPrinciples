@@ -6,11 +6,13 @@ module Chapter30.Exception(
   writeMain2,
   willIFail,
   willFail,
-  willIFail'
+  willIFail',
+  getArgsMain
 )where
 
 import Control.Exception
 import Data.Typeable
+import System.Environment (getArgs)
 
 data MyException = forall e . (Show e, Typeable e) => MyException e
 
@@ -65,3 +67,16 @@ willIFail' :: Integer -> IO ()
 willIFail' denom = print (div 5 denom) `catch` handler
   where handler :: ArithException -> IO ()
         handler e = print e
+
+testDiv :: String -> IO ()
+testDiv d = onlyReportError $ willIFail $ read d
+
+getArgsMain :: IO ()
+getArgsMain = do
+  args <- getArgs
+  mapM_ testDiv args
+
+myMapM :: (Foldable t, Monad m) => (a -> m b) -> t a -> m ()
+myMapM f t = do
+  foldMap f t
+  return ()

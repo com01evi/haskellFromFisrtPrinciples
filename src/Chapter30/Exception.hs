@@ -98,5 +98,5 @@ arithMain = forever $ do
   let tryS :: IO () -> IO (Either SomeException ())
       tryS = try
   _ <- tryS randomException
-  putStrLn "Live to loop another day"
+  putStrLn "Live to loop another day!"
   threadDelay (1 * 1000000)

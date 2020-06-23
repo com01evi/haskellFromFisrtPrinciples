@@ -7,12 +7,19 @@ module Chapter30.Exception(
   willIFail,
   willFail,
   willIFail',
-  getArgsMain
+  getArgsMain,
+  canICatch,
+  SomeError(..),
+  onlyReportError,
+  arithMain
 )where
 
+import Control.Concurrent (threadDelay)
 import Control.Exception
+import Control.Monad (forever)
 import Data.Typeable
 import System.Environment (getArgs)
+import System.Random (randomRIO)
 
 data MyException = forall e . (Show e, Typeable e) => MyException e
 
@@ -76,7 +83,20 @@ getArgsMain = do
   args <- getArgs
   mapM_ testDiv args
 
-myMapM :: (Foldable t, Monad m) => (a -> m b) -> t a -> m ()
-myMapM f t = do
-  foldMap f t
-  return ()
+canICatch :: (Exception e) => e -> IO (Either SomeException ())
+canICatch e = try $ throwIO e
+
+randomException :: IO ()
+randomException = do
+  i <- randomRIO (1,10 :: Int)
+  if i `elem` [1..9]
+    then throwIO DivideByZero
+    else throwIO StackOverflow
+
+arithMain :: IO ()
+arithMain = forever $ do
+  let tryS :: IO () -> IO (Either SomeException ())
+      tryS = try
+  _ <- tryS randomException
+  putStrLn "Live to loop another day!"
+  threadDelay (1 * 100000)

@@ -99,4 +99,4 @@ arithMain = forever $ do
       tryS = try
   _ <- tryS randomException
   putStrLn "Live to loop another day!"
-  threadDelay (1 * 100000)
+  threadDelay (1 * 1000000)

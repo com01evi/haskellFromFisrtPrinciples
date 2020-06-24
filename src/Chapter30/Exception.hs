@@ -11,7 +11,9 @@ module Chapter30.Exception(
   canICatch,
   SomeError(..),
   onlyReportError,
-  arithMain
+  arithMain,
+  evenAndThreeDiv,
+  EATD(..)
 )where
 
 import Control.Concurrent (threadDelay)
@@ -100,3 +102,13 @@ arithMain = forever $ do
   _ <- tryS randomException
   putStrLn "Live to loop another day!!!!!"
   threadDelay (1 * 1000000)
+
+data EATD = NotEven | NotDivThree deriving(Eq, Show)
+
+instance Exception EATD
+
+evenAndThreeDiv :: Int -> IO Int
+evenAndThreeDiv i 
+  | rem i 3 /= 0 = throwIO NotDivThree
+  | odd i = throwIO NotEven
+  | otherwise = return i 

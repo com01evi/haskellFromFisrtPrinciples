@@ -13,14 +13,16 @@ module Chapter30.Exception(
   onlyReportError,
   arithMain,
   evenAndThreeDiv,
-  EATD(..)
+  EATD(..),
+  threadMain
 )where
 
-import Control.Concurrent (threadDelay)
+import Control.Concurrent (threadDelay, forkIO)
 import Control.Exception
 import Control.Monad (forever)
 import Data.Typeable
 import System.Environment (getArgs)
+import System.IO
 import System.Random (randomRIO)
 
 data MyException = forall e . (Show e, Typeable e) => MyException e
@@ -112,3 +114,17 @@ evenAndThreeDiv i
   | rem i 3 /= 0 = throwIO NotDivThree
   | odd i = throwIO NotEven
   | otherwise = return i 
+
+openAndWrite :: IO ()
+openAndWrite = do
+  writeFile "test.dat" (replicate 100 '0' ++ "abc")
+
+data PleaseStop = PleaseStop deriving(Show)
+
+instance Exception PleaseStop
+
+threadMain :: IO ()
+threadMain = do
+  threadId <- forkIO (mask_ openAndWrite)
+  threadDelay 1000
+  throwTo threadId PleaseStop

@@ -20,4 +20,4 @@ import Chapter28.Map
 import Chapter30.Exception
 
 main :: IO ()
-main = getArgsMain
+main = threadMain

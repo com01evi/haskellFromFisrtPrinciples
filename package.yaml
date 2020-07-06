@@ -48,6 +48,11 @@ dependencies:
 - criterion
 - vector
 - primitive
+- bytestring
+- network
+- raw-strings-qq
+- sqlite-simple
+
 
 library:
   source-dirs: src
